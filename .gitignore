@@ -1,0 +1,23 @@
+# Environment variables & secrets
+.env
+*.env
+!.env.example
+
+# Python virtual environment & bytecode
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Testing & cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local build / temporary files
+backups/
+scratch/
+test_*.csv
+*.tmp

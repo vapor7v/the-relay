@@ -1,0 +1,50 @@
+[
+  {
+    "setting": "small-5-no",
+    "chunk_size": 500,
+    "top_k": 5,
+    "rerank": "no",
+    "questions_asked": 18,
+    "correct_cited_pct": 83.3,
+    "wrong_pct": 0.0,
+    "refused_correctly_pct": 16.7,
+    "refused_wrongly_pct": 0.0,
+    "tokens_per_answer": 1550,
+    "ttft_p50": 5527.3,
+    "ttft_p95": 7454.1,
+    "total_p50": 2886.5,
+    "total_p95": 10831.0
+  },
+  {
+    "setting": "medium-3-no",
+    "chunk_size": 1000,
+    "top_k": 3,
+    "rerank": "no",
+    "questions_asked": 18,
+    "correct_cited_pct": 83.3,
+    "wrong_pct": 0.0,
+    "refused_correctly_pct": 16.7,
+    "refused_wrongly_pct": 0.0,
+    "tokens_per_answer": 1752,
+    "ttft_p50": 6366.4,
+    "ttft_p95": 7458.6,
+    "total_p50": 3595.4,
+    "total_p95": 10397.5
+  },
+  {
+    "setting": "medium-5-yes",
+    "chunk_size": 1000,
+    "top_k": 5,
+    "rerank": "yes",
+    "questions_asked": 18,
+    "correct_cited_pct": 83.3,
+    "wrong_pct": 0.0,
+    "refused_correctly_pct": 16.7,
+    "refused_wrongly_pct": 0.0,
+    "tokens_per_answer": 2573,
+    "ttft_p50": 6714.9,
+    "ttft_p95": 7686.0,
+    "total_p50": 3721.4,
+    "total_p95": 10521.7
+  }
+]

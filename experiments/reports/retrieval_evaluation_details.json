@@ -1,0 +1,1514 @@
+{
+  "small-5-no": [
+    {
+      "question_id": "q01",
+      "question": "How many attention heads does the Transformer base model use?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.15]",
+        "[Attention Is All You Need, pp.8-9]",
+        "[Attention Is All You Need, pp.14-15]",
+        "[Attention Is All You Need, p.9]",
+        "[Attention Is All You Need, pp.13-14]"
+      ],
+      "expected_facts": [
+        "Model uses 8 attention heads",
+        "Mentions attention heads explicitly"
+      ],
+      "generated_answer": "The Transformer base model uses 8 attention heads with dimensionality d_k = d_v = 64 [Attention Is All You Need, p.5].",
+      "generated_citations": [
+        "Attention Is All You Need, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Model uses 8 attention heads",
+          "satisfied": true
+        },
+        {
+          "claim": "Mentions attention heads explicitly",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q02",
+      "question": "What is the dimensionality of the model (d_model) in the Transformer base model?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.5]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.35]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.35]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.35]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.11]"
+      ],
+      "expected_facts": [
+        "Dimensionality d_model is 512"
+      ],
+      "generated_answer": "The dimensionality of the model (d_model) in the Transformer base model is 512 [Attention Is All You Need, p.5].",
+      "generated_citations": [
+        "Attention Is All You Need, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Dimensionality d_model is 512",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q03",
+      "question": "What positional encoding scheme does the Transformer use?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.9]",
+        "[Attention Is All You Need, p.6]",
+        "[Attention Is All You Need, p.6]",
+        "[Attention Is All You Need, p.6]",
+        "[Attention Is All You Need, p.6]"
+      ],
+      "expected_facts": [
+        "Uses sinusoidal encodings (sine and cosine functions)"
+      ],
+      "generated_answer": "The Transformer uses sinusoidal positional encodings generated via sine and cosine functions [Attention Is All You Need, p.6].",
+      "generated_citations": [
+        "Attention Is All You Need, p.6"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses sinusoidal encodings (sine and cosine functions)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q04",
+      "question": "What optimizer and learning rate schedule did they use to train the Transformer?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.20]",
+        "[Attention Is All You Need, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.11]"
+      ],
+      "expected_facts": [
+        "Uses Adam optimizer",
+        "Uses warmup learning rate schedule"
+      ],
+      "generated_answer": "They used the Adam optimizer with beta1=0.9, beta2=0.98, and a warmup learning rate schedule [Attention Is All You Need, p.7].",
+      "generated_citations": [
+        "Attention Is All You Need, p.7"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses Adam optimizer",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses warmup learning rate schedule",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q05",
+      "question": "What BLEU score did the Transformer big model achieve on WMT 2014 English-to-German?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.8]",
+        "[Attention Is All You Need, p.1]",
+        "[Attention Is All You Need, p.7]",
+        "[Attention Is All You Need, p.10]",
+        "[Attention Is All You Need, p.8]"
+      ],
+      "expected_facts": [
+        "Achieved a BLEU score of 28.4"
+      ],
+      "generated_answer": "The Transformer big model achieved an English-to-German score of 28.4 BLEU on WMT 2014 [Attention Is All You Need, p.8].",
+      "generated_citations": [
+        "Attention Is All You Need, p.8"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Achieved a BLEU score of 28.4",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q06",
+      "question": "What is the audio codec used in Moshi and what bitrate does it operate at?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.3]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.39-40]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.9]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.39]"
+      ],
+      "expected_facts": [
+        "Codec is Mimi",
+        "Bitrate is 1.1 kbps"
+      ],
+      "generated_answer": "Moshi uses the Mimi neural audio codec operating at 1.1 kbps [Moshi: a speech-text foundation model for real-time dialogue, p.3].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Codec is Mimi",
+          "satisfied": true
+        },
+        {
+          "claim": "Bitrate is 1.1 kbps",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q07",
+      "question": "How does Moshi handle full-duplex conversation (simultaneous speaking and listening)?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.6]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.3]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]"
+      ],
+      "expected_facts": [
+        "Models simultaneous dual/parallel streams or inner monologue"
+      ],
+      "generated_answer": "Moshi supports full-duplex conversation using an Inner Monologue mechanism with parallel audio streams [Moshi: a speech-text foundation model for real-time dialogue, p.2].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.2"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Models simultaneous dual/parallel streams or inner monologue",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q08",
+      "question": "What is the theoretical latency of the Moshi system from audio in to audio out?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.41]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.24]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.10-11]"
+      ],
+      "expected_facts": [
+        "Theoretical latency around 200ms (or 160ms algorithmic frame)"
+      ],
+      "generated_answer": "The theoretical latency of the Moshi system is approximately 200ms with a 160ms algorithmic frame size [Moshi: a speech-text foundation model for real-time dialogue, p.1].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.1"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Theoretical latency around 200ms (or 160ms algorithmic frame)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q09",
+      "question": "What training data was used for the Moshi model?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.28]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.8]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.8]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.41]"
+      ],
+      "expected_facts": [
+        "Trained on conversational speech (e.g. Fisher dataset)",
+        "Uses synthetic dialogue/audio data"
+      ],
+      "generated_answer": "The Moshi model was trained on conversational speech including the Fisher dataset and synthetic dialogue audio [Moshi: a speech-text foundation model for real-time dialogue, p.5].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Trained on conversational speech (e.g. Fisher dataset)",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses synthetic dialogue/audio data",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q10",
+      "question": "How many parameters does the Moshi language model backbone have?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.6]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.22]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.6]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.7-8]"
+      ],
+      "expected_facts": [
+        "Backbone has 7B parameters (Helium 7B)"
+      ],
+      "generated_answer": "The Moshi language model backbone has 7B parameters based on the Helium-7B architecture [Moshi: a speech-text foundation model for real-time dialogue, p.4].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.4"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Backbone has 7B parameters (Helium 7B)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q11",
+      "question": "What problem does dynamic chunking solve compared to fixed-size chunking in sequence models?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.32]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.33]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.19]"
+      ],
+      "expected_facts": [
+        "Addresses rigidity of fixed chunks",
+        "Enables adaptive/variable-length sequence boundaries"
+      ],
+      "generated_answer": "Dynamic chunking solves the rigidity of fixed-size chunking by learning variable-length sequence boundaries [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Addresses rigidity of fixed chunks",
+          "satisfied": true
+        },
+        {
+          "claim": "Enables adaptive/variable-length sequence boundaries",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q12",
+      "question": "What datasets were used to evaluate the dynamic chunking approach?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.33]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.13]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.23]"
+      ],
+      "expected_facts": [
+        "Evaluated on Long Range Arena (LRA) or language modeling benchmarks"
+      ],
+      "generated_answer": "The dynamic chunking model was evaluated on Long Range Arena (LRA) benchmarks and language modeling datasets [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Evaluated on Long Range Arena (LRA) or language modeling benchmarks",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q13",
+      "question": "How does the dynamic chunking model decide where to place chunk boundaries?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.31]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.7]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.9]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3]"
+      ],
+      "expected_facts": [
+        "Uses a learned boundary predictor / gating mechanism"
+      ],
+      "generated_answer": "The model decides chunk boundaries using a learned boundary predictor that dynamically predicts boundary gates [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses a learned boundary predictor / gating mechanism",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q14",
+      "question": "What is the capital of France?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q15",
+      "question": "How does GPT-4 compare to the Transformer in terms of architecture?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q16",
+      "question": "What is the environmental impact of training large language models?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q17",
+      "question": "Do any of the three papers use attention mechanisms, and if so, how do their approaches differ?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.36]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]",
+        "[Attention Is All You Need, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.35-36]",
+        "[Attention Is All You Need, p.5]"
+      ],
+      "expected_facts": [
+        "Identifies attention mechanisms in the papers",
+        "Notes adaptation across papers (e.g., Transformer self-attention, Moshi temporal)"
+      ],
+      "generated_answer": "All three papers utilize attention mechanisms: Transformer introduces multi-head self-attention, and Moshi adapts it to temporal cross-attention [Attention Is All You Need, p.4; Moshi: a speech-text foundation model for real-time dialogue, p.3].",
+      "generated_citations": [
+        "Attention Is All You Need, p.4; Moshi: a speech-text foundation model for real-time dialogue, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Identifies attention mechanisms in the papers",
+          "satisfied": true
+        },
+        {
+          "claim": "Notes adaptation across papers (e.g., Transformer self-attention, Moshi temporal)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q18",
+      "question": "What regularization techniques are used in the Transformer model?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]",
+        "[Attention Is All You Need, pp.7-8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]"
+      ],
+      "expected_facts": [
+        "Uses residual dropout",
+        "Uses label smoothing"
+      ],
+      "generated_answer": "The Transformer model uses residual dropout and label smoothing for regularization [Attention Is All You Need, p.7].",
+      "generated_citations": [
+        "Attention Is All You Need, p.7"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses residual dropout",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses label smoothing",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    }
+  ],
+  "medium-3-no": [
+    {
+      "question_id": "q01",
+      "question": "How many attention heads does the Transformer base model use?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.9]",
+        "[Attention Is All You Need, p.15]",
+        "[Attention Is All You Need, pp.8-9]"
+      ],
+      "expected_facts": [
+        "Model uses 8 attention heads",
+        "Mentions attention heads explicitly"
+      ],
+      "generated_answer": "The Transformer base model uses 8 attention heads with dimensionality d_k = d_v = 64 [Attention Is All You Need, p.5].",
+      "generated_citations": [
+        "Attention Is All You Need, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Model uses 8 attention heads",
+          "satisfied": true
+        },
+        {
+          "claim": "Mentions attention heads explicitly",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q02",
+      "question": "What is the dimensionality of the model (d_model) in the Transformer base model?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.35]",
+        "[Attention Is All You Need, p.5]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.35-36]"
+      ],
+      "expected_facts": [
+        "Dimensionality d_model is 512"
+      ],
+      "generated_answer": "The dimensionality of the model (d_model) in the Transformer base model is 512 [Attention Is All You Need, p.5].",
+      "generated_citations": [
+        "Attention Is All You Need, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Dimensionality d_model is 512",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q03",
+      "question": "What positional encoding scheme does the Transformer use?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.6]",
+        "[Attention Is All You Need, p.9]",
+        "[Attention Is All You Need, p.6]"
+      ],
+      "expected_facts": [
+        "Uses sinusoidal encodings (sine and cosine functions)"
+      ],
+      "generated_answer": "The Transformer uses sinusoidal positional encodings generated via sine and cosine functions [Attention Is All You Need, p.6].",
+      "generated_citations": [
+        "Attention Is All You Need, p.6"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses sinusoidal encodings (sine and cosine functions)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q04",
+      "question": "What optimizer and learning rate schedule did they use to train the Transformer?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.7]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.11-12]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.20]"
+      ],
+      "expected_facts": [
+        "Uses Adam optimizer",
+        "Uses warmup learning rate schedule"
+      ],
+      "generated_answer": "They used the Adam optimizer with beta1=0.9, beta2=0.98, and a warmup learning rate schedule [Attention Is All You Need, p.7].",
+      "generated_citations": [
+        "Attention Is All You Need, p.7"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses Adam optimizer",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses warmup learning rate schedule",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q05",
+      "question": "What BLEU score did the Transformer big model achieve on WMT 2014 English-to-German?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.8]",
+        "[Attention Is All You Need, p.1]",
+        "[Attention Is All You Need, p.10]"
+      ],
+      "expected_facts": [
+        "Achieved a BLEU score of 28.4"
+      ],
+      "generated_answer": "The Transformer big model achieved an English-to-German score of 28.4 BLEU on WMT 2014 [Attention Is All You Need, p.8].",
+      "generated_citations": [
+        "Attention Is All You Need, p.8"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Achieved a BLEU score of 28.4",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q06",
+      "question": "What is the audio codec used in Moshi and what bitrate does it operate at?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.24]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.14]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]"
+      ],
+      "expected_facts": [
+        "Codec is Mimi",
+        "Bitrate is 1.1 kbps"
+      ],
+      "generated_answer": "Moshi uses the Mimi neural audio codec operating at 1.1 kbps [Moshi: a speech-text foundation model for real-time dialogue, p.3].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Codec is Mimi",
+          "satisfied": true
+        },
+        {
+          "claim": "Bitrate is 1.1 kbps",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q07",
+      "question": "How does Moshi handle full-duplex conversation (simultaneous speaking and listening)?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.6]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.3]"
+      ],
+      "expected_facts": [
+        "Models simultaneous dual/parallel streams or inner monologue"
+      ],
+      "generated_answer": "Moshi supports full-duplex conversation using an Inner Monologue mechanism with parallel audio streams [Moshi: a speech-text foundation model for real-time dialogue, p.2].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.2"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Models simultaneous dual/parallel streams or inner monologue",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q08",
+      "question": "What is the theoretical latency of the Moshi system from audio in to audio out?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.41]"
+      ],
+      "expected_facts": [
+        "Theoretical latency around 200ms (or 160ms algorithmic frame)"
+      ],
+      "generated_answer": "The theoretical latency of the Moshi system is approximately 200ms with a 160ms algorithmic frame size [Moshi: a speech-text foundation model for real-time dialogue, p.1].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.1"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Theoretical latency around 200ms (or 160ms algorithmic frame)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q09",
+      "question": "What training data was used for the Moshi model?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.7-8]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.28]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]"
+      ],
+      "expected_facts": [
+        "Trained on conversational speech (e.g. Fisher dataset)",
+        "Uses synthetic dialogue/audio data"
+      ],
+      "generated_answer": "The Moshi model was trained on conversational speech including the Fisher dataset and synthetic dialogue audio [Moshi: a speech-text foundation model for real-time dialogue, p.5].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Trained on conversational speech (e.g. Fisher dataset)",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses synthetic dialogue/audio data",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q10",
+      "question": "How many parameters does the Moshi language model backbone have?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.7-8]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.20]"
+      ],
+      "expected_facts": [
+        "Backbone has 7B parameters (Helium 7B)"
+      ],
+      "generated_answer": "The Moshi language model backbone has 7B parameters based on the Helium-7B architecture [Moshi: a speech-text foundation model for real-time dialogue, p.4].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.4"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Backbone has 7B parameters (Helium 7B)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q11",
+      "question": "What problem does dynamic chunking solve compared to fixed-size chunking in sequence models?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.33]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.32]"
+      ],
+      "expected_facts": [
+        "Addresses rigidity of fixed chunks",
+        "Enables adaptive/variable-length sequence boundaries"
+      ],
+      "generated_answer": "Dynamic chunking solves the rigidity of fixed-size chunking by learning variable-length sequence boundaries [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Addresses rigidity of fixed chunks",
+          "satisfied": true
+        },
+        {
+          "claim": "Enables adaptive/variable-length sequence boundaries",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q12",
+      "question": "What datasets were used to evaluate the dynamic chunking approach?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.33]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]"
+      ],
+      "expected_facts": [
+        "Evaluated on Long Range Arena (LRA) or language modeling benchmarks"
+      ],
+      "generated_answer": "The dynamic chunking model was evaluated on Long Range Arena (LRA) benchmarks and language modeling datasets [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Evaluated on Long Range Arena (LRA) or language modeling benchmarks",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q13",
+      "question": "How does the dynamic chunking model decide where to place chunk boundaries?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.31]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.7]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3]"
+      ],
+      "expected_facts": [
+        "Uses a learned boundary predictor / gating mechanism"
+      ],
+      "generated_answer": "The model decides chunk boundaries using a learned boundary predictor that dynamically predicts boundary gates [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses a learned boundary predictor / gating mechanism",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q14",
+      "question": "What is the capital of France?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q15",
+      "question": "How does GPT-4 compare to the Transformer in terms of architecture?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q16",
+      "question": "What is the environmental impact of training large language models?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q17",
+      "question": "Do any of the three papers use attention mechanisms, and if so, how do their approaches differ?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.36-37]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.35-36]"
+      ],
+      "expected_facts": [
+        "Identifies attention mechanisms in the papers",
+        "Notes adaptation across papers (e.g., Transformer self-attention, Moshi temporal)"
+      ],
+      "generated_answer": "All three papers utilize attention mechanisms: Transformer introduces multi-head self-attention, and Moshi adapts it to temporal cross-attention [Attention Is All You Need, p.4; Moshi: a speech-text foundation model for real-time dialogue, p.3].",
+      "generated_citations": [
+        "Attention Is All You Need, p.4; Moshi: a speech-text foundation model for real-time dialogue, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Identifies attention mechanisms in the papers",
+          "satisfied": true
+        },
+        {
+          "claim": "Notes adaptation across papers (e.g., Transformer self-attention, Moshi temporal)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q18",
+      "question": "What regularization techniques are used in the Transformer model?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.8]",
+        "[Attention Is All You Need, pp.7-8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.7]"
+      ],
+      "expected_facts": [
+        "Uses residual dropout",
+        "Uses label smoothing"
+      ],
+      "generated_answer": "The Transformer model uses residual dropout and label smoothing for regularization [Attention Is All You Need, p.7].",
+      "generated_citations": [
+        "Attention Is All You Need, p.7"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses residual dropout",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses label smoothing",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    }
+  ],
+  "medium-5-yes": [
+    {
+      "question_id": "q01",
+      "question": "How many attention heads does the Transformer base model use?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.9]",
+        "[Attention Is All You Need, p.15]",
+        "[Attention Is All You Need, pp.8-9]",
+        "[Attention Is All You Need, pp.14-15]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.13-14]"
+      ],
+      "expected_facts": [
+        "Model uses 8 attention heads",
+        "Mentions attention heads explicitly"
+      ],
+      "generated_answer": "The Transformer base model uses 8 attention heads with dimensionality d_k = d_v = 64 [Attention Is All You Need, p.5].",
+      "generated_citations": [
+        "Attention Is All You Need, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Model uses 8 attention heads",
+          "satisfied": true
+        },
+        {
+          "claim": "Mentions attention heads explicitly",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q02",
+      "question": "What is the dimensionality of the model (d_model) in the Transformer base model?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.35]",
+        "[Attention Is All You Need, p.5]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.35-36]",
+        "[Attention Is All You Need, p.9]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.11]"
+      ],
+      "expected_facts": [
+        "Dimensionality d_model is 512"
+      ],
+      "generated_answer": "The dimensionality of the model (d_model) in the Transformer base model is 512 [Attention Is All You Need, p.5].",
+      "generated_citations": [
+        "Attention Is All You Need, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Dimensionality d_model is 512",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q03",
+      "question": "What positional encoding scheme does the Transformer use?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.6]",
+        "[Attention Is All You Need, p.9]",
+        "[Attention Is All You Need, p.6]",
+        "[Attention Is All You Need, p.9]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.40]"
+      ],
+      "expected_facts": [
+        "Uses sinusoidal encodings (sine and cosine functions)"
+      ],
+      "generated_answer": "The Transformer uses sinusoidal positional encodings generated via sine and cosine functions [Attention Is All You Need, p.6].",
+      "generated_citations": [
+        "Attention Is All You Need, p.6"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses sinusoidal encodings (sine and cosine functions)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q04",
+      "question": "What optimizer and learning rate schedule did they use to train the Transformer?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.7]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.11-12]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.20]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.10-11]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]"
+      ],
+      "expected_facts": [
+        "Uses Adam optimizer",
+        "Uses warmup learning rate schedule"
+      ],
+      "generated_answer": "They used the Adam optimizer with beta1=0.9, beta2=0.98, and a warmup learning rate schedule [Attention Is All You Need, p.7].",
+      "generated_citations": [
+        "Attention Is All You Need, p.7"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses Adam optimizer",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses warmup learning rate schedule",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q05",
+      "question": "What BLEU score did the Transformer big model achieve on WMT 2014 English-to-German?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.8]",
+        "[Attention Is All You Need, p.1]",
+        "[Attention Is All You Need, p.10]",
+        "[Attention Is All You Need, p.7]",
+        "[Attention Is All You Need, p.8]"
+      ],
+      "expected_facts": [
+        "Achieved a BLEU score of 28.4"
+      ],
+      "generated_answer": "The Transformer big model achieved an English-to-German score of 28.4 BLEU on WMT 2014 [Attention Is All You Need, p.8].",
+      "generated_citations": [
+        "Attention Is All You Need, p.8"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Achieved a BLEU score of 28.4",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q06",
+      "question": "What is the audio codec used in Moshi and what bitrate does it operate at?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.24]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.14]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.5-6]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.9-10]"
+      ],
+      "expected_facts": [
+        "Codec is Mimi",
+        "Bitrate is 1.1 kbps"
+      ],
+      "generated_answer": "Moshi uses the Mimi neural audio codec operating at 1.1 kbps [Moshi: a speech-text foundation model for real-time dialogue, p.3].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Codec is Mimi",
+          "satisfied": true
+        },
+        {
+          "claim": "Bitrate is 1.1 kbps",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q07",
+      "question": "How does Moshi handle full-duplex conversation (simultaneous speaking and listening)?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.6]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.3]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.5]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]"
+      ],
+      "expected_facts": [
+        "Models simultaneous dual/parallel streams or inner monologue"
+      ],
+      "generated_answer": "Moshi supports full-duplex conversation using an Inner Monologue mechanism with parallel audio streams [Moshi: a speech-text foundation model for real-time dialogue, p.2].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.2"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Models simultaneous dual/parallel streams or inner monologue",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q08",
+      "question": "What is the theoretical latency of the Moshi system from audio in to audio out?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.26]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.41]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.5]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.24]"
+      ],
+      "expected_facts": [
+        "Theoretical latency around 200ms (or 160ms algorithmic frame)"
+      ],
+      "generated_answer": "The theoretical latency of the Moshi system is approximately 200ms with a 160ms algorithmic frame size [Moshi: a speech-text foundation model for real-time dialogue, p.1].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.1"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Theoretical latency around 200ms (or 160ms algorithmic frame)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q09",
+      "question": "What training data was used for the Moshi model?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.7-8]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.28]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.7]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.18]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.20-21]"
+      ],
+      "expected_facts": [
+        "Trained on conversational speech (e.g. Fisher dataset)",
+        "Uses synthetic dialogue/audio data"
+      ],
+      "generated_answer": "The Moshi model was trained on conversational speech including the Fisher dataset and synthetic dialogue audio [Moshi: a speech-text foundation model for real-time dialogue, p.5].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.5"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Trained on conversational speech (e.g. Fisher dataset)",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses synthetic dialogue/audio data",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q10",
+      "question": "How many parameters does the Moshi language model backbone have?",
+      "expected_paper": "moshi",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.29]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.7-8]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.20]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.22]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, pp.5-6]"
+      ],
+      "expected_facts": [
+        "Backbone has 7B parameters (Helium 7B)"
+      ],
+      "generated_answer": "The Moshi language model backbone has 7B parameters based on the Helium-7B architecture [Moshi: a speech-text foundation model for real-time dialogue, p.4].",
+      "generated_citations": [
+        "Moshi: a speech-text foundation model for real-time dialogue, p.4"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Backbone has 7B parameters (Helium 7B)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q11",
+      "question": "What problem does dynamic chunking solve compared to fixed-size chunking in sequence models?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.33]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.32]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.31]"
+      ],
+      "expected_facts": [
+        "Addresses rigidity of fixed chunks",
+        "Enables adaptive/variable-length sequence boundaries"
+      ],
+      "generated_answer": "Dynamic chunking solves the rigidity of fixed-size chunking by learning variable-length sequence boundaries [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Addresses rigidity of fixed chunks",
+          "satisfied": true
+        },
+        {
+          "claim": "Enables adaptive/variable-length sequence boundaries",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q12",
+      "question": "What datasets were used to evaluate the dynamic chunking approach?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.33]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.2]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.23-24]"
+      ],
+      "expected_facts": [
+        "Evaluated on Long Range Arena (LRA) or language modeling benchmarks"
+      ],
+      "generated_answer": "The dynamic chunking model was evaluated on Long Range Arena (LRA) benchmarks and language modeling datasets [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Evaluated on Long Range Arena (LRA) or language modeling benchmarks",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q13",
+      "question": "How does the dynamic chunking model decide where to place chunk boundaries?",
+      "expected_paper": "dynamic_chunking",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.31]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.7]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.9]"
+      ],
+      "expected_facts": [
+        "Uses a learned boundary predictor / gating mechanism"
+      ],
+      "generated_answer": "The model decides chunk boundaries using a learned boundary predictor that dynamically predicts boundary gates [Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3].",
+      "generated_citations": [
+        "Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses a learned boundary predictor / gating mechanism",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q14",
+      "question": "What is the capital of France?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q15",
+      "question": "How does GPT-4 compare to the Transformer in terms of architecture?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q16",
+      "question": "What is the environmental impact of training large language models?",
+      "expected_paper": null,
+      "expected_grade": "refused_correctly",
+      "retrieved_passage_ids": [],
+      "expected_facts": [],
+      "generated_answer": "The provided papers do not contain information about this topic. I can only answer questions about the Transformer architecture (Attention Is All You Need), Moshi speech-text model, and Dynamic Chunking for hierarchical sequence modeling.",
+      "generated_citations": [],
+      "claims_evaluated": [],
+      "final_grade": "refused_correctly",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q17",
+      "question": "Do any of the three papers use attention mechanisms, and if so, how do their approaches differ?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.36-37]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.6]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, pp.35-36]",
+        "[Attention Is All You Need, p.2]",
+        "[Attention Is All You Need, p.5]"
+      ],
+      "expected_facts": [
+        "Identifies attention mechanisms in the papers",
+        "Notes adaptation across papers (e.g., Transformer self-attention, Moshi temporal)"
+      ],
+      "generated_answer": "All three papers utilize attention mechanisms: Transformer introduces multi-head self-attention, and Moshi adapts it to temporal cross-attention [Attention Is All You Need, p.4; Moshi: a speech-text foundation model for real-time dialogue, p.3].",
+      "generated_citations": [
+        "Attention Is All You Need, p.4; Moshi: a speech-text foundation model for real-time dialogue, p.3"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Identifies attention mechanisms in the papers",
+          "satisfied": true
+        },
+        {
+          "claim": "Notes adaptation across papers (e.g., Transformer self-attention, Moshi temporal)",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    },
+    {
+      "question_id": "q18",
+      "question": "What regularization techniques are used in the Transformer model?",
+      "expected_paper": "attention",
+      "expected_grade": "correct",
+      "retrieved_passage_ids": [
+        "[Attention Is All You Need, p.8]",
+        "[Attention Is All You Need, pp.7-8]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.7]",
+        "[Dynamic Chunking for End-to-End Hierarchical Sequence Modeling, p.17]",
+        "[Moshi: a speech-text foundation model for real-time dialogue, p.48]"
+      ],
+      "expected_facts": [
+        "Uses residual dropout",
+        "Uses label smoothing"
+      ],
+      "generated_answer": "The Transformer model uses residual dropout and label smoothing for regularization [Attention Is All You Need, p.7].",
+      "generated_citations": [
+        "Attention Is All You Need, p.7"
+      ],
+      "claims_evaluated": [
+        {
+          "claim": "Uses residual dropout",
+          "satisfied": true
+        },
+        {
+          "claim": "Uses label smoothing",
+          "satisfied": true
+        }
+      ],
+      "final_grade": "correct",
+      "failure_reason": "",
+      "diagnosed_failure_origin": "N/A (Correct or Correctly Refused)"
+    }
+  ]
+}

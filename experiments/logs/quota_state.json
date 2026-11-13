@@ -1,0 +1,8 @@
+{
+  "date_utc": "2026-11-13",
+  "model_id": "qwen/qwen3.8-27b",
+  "daily_requests": 162,
+  "daily_tokens": 89900,
+  "day_reset_timestamp": 1794614400.0,
+  "updated_at": 1794606014.7146463
+}

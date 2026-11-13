@@ -1,0 +1,20 @@
+# Core Networking and HTTP Client
+aiohttp==3.14.5
+httpx==0.28.1
+
+# Environment & Configuration Management
+python-dotenv==1.2.4
+
+# Numerical, Vector Math & TF-IDF Indexing
+numpy==2.5.4
+scikit-learn==1.9.1
+scipy==1.18.1
+
+# PDF Document Extraction and Report Generation
+PyPDF2==3.0.1
+reportlab==5.1.0
+pillow==13.0.0
+
+# Testing Framework
+pytest==9.2.0
+anyio==4.16.0

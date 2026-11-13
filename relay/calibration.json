@@ -1,0 +1,13 @@
+{
+  "ttft_median_ms": 284.0,
+  "ttft_p95_ms": 1407.5,
+  "ttft_stddev_log": 0.9731,
+  "ttft_sample_stddev_log": 0.679,
+  "tps": 520.0,
+  "tps_stddev": 135.0,
+  "total_median_ms": 445.0,
+  "rpm_limit": 60,
+  "tpm_limit": 7000,
+  "failure_rate": 0.01,
+  "load_slowdown_factor": 15.0
+}
