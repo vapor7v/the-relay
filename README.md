@@ -180,16 +180,16 @@ Test coverage includes:
 ```
 ├── .env.example                          # Template for environment configuration
 ├── .gitignore                             # Git ignore rules (protects credentials & venv)
-├── CHECKLIST.md                           # Comprehensive requirements and audit checklist
 ├── README.md                              # Project documentation and reproduction guide
 ├── requirements.txt                       # Pinned Python package dependencies
 ├── results.csv                            # Official 124-row raw experimental data
 ├── results_original_backup.csv            # Immutable backup of original experiment run
 ├── report.md                              # 2-page technical report in Markdown
 ├── report.pdf                             # Compiled 2-page publication-quality PDF
-├── conversation_history.md                # Sanitized interaction log
 ├── docs/
 │   ├── ARCHITECTURE.md                    # Deep architectural documentation
+│   ├── CHECKLIST.md                       # Comprehensive requirements and audit checklist
+│   ├── conversation_history.md            # Sanitized interaction log
 │   └── FINAL_AUDIT.md                     # Engineering correction pass findings & fixes
 ├── experiments/
 │   ├── logs/

@@ -115,7 +115,7 @@ Visiting [vaani.dev](https://www.vaani.dev/):
 ---
 
 ## How I worked with the assistant
-The collaborative development process prioritized concrete running code, empirically measured telemetry, and strict verification. Complete authentic conversation history is preserved in `conversation_history.md`.
+The collaborative development process prioritized concrete running code, empirically measured telemetry, and strict verification. Complete authentic conversation history is preserved in `docs/conversation_history.md`.
 
 ### Three prompts that mattered most:
 1. *"Execute the application, run tests, inspect failures and fix them. Pay particular attention to citation correctness, streaming-based first-token measurements, request-level CSV logging, simulator calibration and reproducibility."* (Established the empirical rigor required).
