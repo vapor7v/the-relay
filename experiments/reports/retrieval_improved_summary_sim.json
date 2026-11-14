@@ -1,0 +1,17 @@
+{
+  "setting": "improved-hybrid-rrf-rerank",
+  "model": "qwen/qwen3.8-27b",
+  "total_questions": 18,
+  "answerable_questions": 15,
+  "ood_questions": 3,
+  "correct_answers": 15,
+  "answerable_accuracy_pct": 100.0,
+  "ood_refusal_accuracy_pct": 100.0,
+  "overall_correct_pct": 83.3,
+  "wrong_pct": 0.0,
+  "refused_correctly_pct": 16.7,
+  "refused_wrongly_pct": 0.0,
+  "avg_tokens_per_request": 3962.9,
+  "avg_total_ms": 5500.1,
+  "avg_ttft_ms": 3244.7
+}

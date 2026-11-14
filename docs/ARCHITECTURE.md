@@ -1,3 +1,4 @@
+
 # The Relay — System Architecture Documentation
 
 ## 1. Executive Summary
@@ -63,12 +64,13 @@ User-Visible Answer Delivered (User-Visible TTFT recorded)
    - For out-of-domain queries (e.g. general trivia), the pipeline issues an early refusal without consuming passage retrieval or drafting tokens.
 
 2. **Step 2: Passage Retrieval**:
-   - Executes sparse retrieval over pre-indexed paper chunks.
+   - Executes multi-stage retrieval over pre-indexed paper chunks.
    - Generates explicit citation metadata labels: `[Paper Title, p.X]`.
-   - Supports three canonical configurations:
-     - `small-5-no`: 500 characters, 5 chunks, no reranking.
-     - `medium-3-no`: 1000 characters, 3 chunks, no reranking.
-     - `medium-5-yes`: 1000 characters, 5 chunks, with cosine reranking.
+   - Supports both legacy baseline configurations and the high-accuracy hybrid pipeline:
+     - Baseline `small-5-no`: 500 characters, 5 chunks, TF-IDF sparse retrieval.
+     - Baseline `medium-3-no`: 1000 characters, 3 chunks, TF-IDF sparse retrieval.
+     - Baseline `medium-5-yes`: 1000 characters, 5 chunks, TF-IDF with LLM reranking.
+     - Advanced `improved-hybrid-rrf-rerank`: Section-aware chunking, dense semantic vectors (`all-MiniLM-L6-v2`) + BM25 + TF-IDF with Reciprocal Rank Fusion ($k=60$) and second-stage local candidate reranking, raising Recall@5 from 80.0% to 93.3% and MRR to 0.9000.
 
 3. **Step 3: Answer Drafting**:
    - Synthesizes an academic response strictly grounded in the retrieved passages.

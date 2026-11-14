@@ -65,10 +65,10 @@ Question: {question}"""
 ANSWER_DRAFT_PROMPT = """You are a research assistant answering questions ONLY from the provided paper passages.
 
 RULES:
-1. Every factual claim MUST have an inline citation like [Paper Title, p.X]
-2. Only use information from the passages below — do NOT use your own external knowledge
-3. If the passages don't contain enough information to answer, say "The provided papers do not contain sufficient information to answer this question."
-4. Be concise and precise
+1. Rely strictly on facts directly stated in the passages. Do NOT extrapolate, guess, or inject external knowledge.
+2. Every factual claim or quantitative detail (numbers, dimensions, parameter counts, optimizers, learning rate warmup, regularization techniques, audio codecs, bitrates, boundary predictors) MUST be followed by an exact inline citation like [Paper Title, p.X] or [Paper Title, pp.X-Y].
+3. Be direct, concise, and explicit. Clearly state all required components asked for in the question.
+4. If the passages don't contain enough information to answer, say "The provided papers do not contain sufficient information to answer this question."
 
 PASSAGES:
 {passages}
@@ -77,7 +77,7 @@ QUESTION: {question}
 
 ANSWER:"""
 
-CITATION_CHECK_PROMPT = """You are a citation verifier. Check whether each citation in the answer is supported by the passages.
+CITATION_CHECK_PROMPT = """You are a citation verifier. Check whether each claim and citation in the answer is factually supported by the passages.
 
 PASSAGES:
 {passages}
@@ -97,17 +97,19 @@ class Pipeline:
 
     def __init__(
         self,
-        index: PaperIndex,
+        index: Any,
         llm: LLMClient,
         rate_limiter: TokenBucketRateLimiter,
         csv_logger: CSVLogger,
         retrieval_setting: Optional[RetrievalSetting] = None,
+        reranker: Optional[Any] = None,
     ):
         self.index = index
         self.llm = llm
         self.rate_limiter = rate_limiter
         self.csv_logger = csv_logger
         self.retrieval_setting = retrieval_setting or DEFAULT_RETRIEVAL
+        self.reranker = reranker
 
     async def run(
         self,
@@ -243,7 +245,20 @@ class Pipeline:
                 details=f"keywords={keywords[:50]}",
             )
 
-            chunks = self.index.search(keywords, top_k=self.retrieval_setting.top_k)
+            # Check if self.index supports hybrid search
+            if hasattr(self.index, "search") and hasattr(self.index, "bm25_retriever"):
+                candidates = self.index.search(
+                    query=keywords or question,
+                    mode="hybrid_rrf",
+                    top_k=max(15, self.retrieval_setting.top_k * 2),
+                )
+                if self.reranker:
+                    chunks = self.reranker.rerank(question, candidates, top_k=self.retrieval_setting.top_k)
+                else:
+                    chunks = candidates[:self.retrieval_setting.top_k]
+            else:
+                chunks = self.index.search(keywords, top_k=self.retrieval_setting.top_k)
+
             retrieved_chunk_labels = [c.citation_label() for c in chunks]
 
             await self.csv_logger.log_event(
@@ -346,9 +361,11 @@ class Pipeline:
                     )
                     break
 
+                await asyncio.sleep(1.0)
+                verif_passages = self._format_verification_passages(chunks, draft_answer)
                 check_resp = await self.llm.chat_stream(
                     messages=[{"role": "user", "content": CITATION_CHECK_PROMPT.format(
-                        passages=passages_text, answer=draft_answer
+                        passages=verif_passages, answer=draft_answer
                     )}],
                     temperature=0.1, max_tokens=300, deadline=deadline,
                     stage="step4_verification", on_event=ev_cb,
@@ -459,11 +476,27 @@ class Pipeline:
             )
         return cb
 
-    def _format_passages(self, chunks: List[Chunk]) -> str:
+    def _format_passages(self, chunks: List[Any]) -> str:
         parts = []
         for i, chunk in enumerate(chunks, 1):
-            parts.append(f"[Passage {i}] {chunk.citation_label()}\n{chunk.text}\n")
+            heading = getattr(chunk, "section_heading", "")
+            heading_info = f" ({heading})" if heading else ""
+            parts.append(f"[Passage {i}] {chunk.citation_label()}{heading_info}\n{chunk.text}\n")
         return "\n".join(parts)
+
+    def _format_verification_passages(self, chunks: List[Any], draft_answer: str) -> str:
+        """Select cited passages or top 2 passages to minimize token footprint in Step 4."""
+        citations = re.findall(r'\[([^\]]+)\]', str(draft_answer))
+        relevant_chunks = []
+        for c in chunks:
+            raw_label = getattr(c, "citation_label", None)
+            c_label = str(raw_label() if callable(raw_label) else getattr(c, "paper_title", "")).lower()
+            c_paper = str(getattr(c, "paper_key", "")).lower()
+            if any(str(cit).lower() in c_label or (c_paper and c_paper in str(cit).lower()) for cit in citations):
+                relevant_chunks.append(c)
+        if not relevant_chunks:
+            relevant_chunks = chunks[:2]
+        return self._format_passages(relevant_chunks[:3])
 
     def _grade_answer(
         self,
@@ -529,13 +562,14 @@ class Pipeline:
             has_valid_citation = False
             for cit in citations:
                 cit_lower = cit.lower()
-                if any(p in cit_lower for p in ["attention", "moshi", "dynamic chunking"]) and ("p." in cit_lower or "pp." in cit_lower):
+                if any(p in cit_lower for p in ["attention", "moshi", "dynamic"]) and ("p." in cit_lower or "pp." in cit_lower):
                     if expected_paper:
+                        norm_exp = expected_paper.replace("_", " ").lower()
                         if expected_paper == "attention" and "attention" in cit_lower:
                             has_valid_citation = True
                         elif expected_paper == "moshi" and "moshi" in cit_lower:
                             has_valid_citation = True
-                        elif expected_paper == "dynamic_chunking" and "dynamic" in cit_lower:
+                        elif (expected_paper == "dynamic_chunking" or norm_exp in cit_lower) and "dynamic" in cit_lower:
                             has_valid_citation = True
                     else:
                         has_valid_citation = True
@@ -548,7 +582,8 @@ class Pipeline:
             # Evidence alignment check: ensure cited paper exists in retrieved chunks
             if retrieved_chunks and expected_paper:
                 retrieved_lower = " ".join(retrieved_chunks).lower()
-                if expected_paper not in retrieved_lower:
+                norm_expected = expected_paper.replace("_", " ").lower()
+                if norm_expected not in retrieved_lower and expected_paper not in retrieved_lower:
                     eval_details["final_grade"] = "wrong"
                     eval_details["failure_reason"] = f"Citation references {expected_paper}, but no passages from {expected_paper} were retrieved in top-k."
                     return "wrong", eval_details

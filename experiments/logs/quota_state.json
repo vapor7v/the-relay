@@ -1,8 +1,8 @@
 {
   "date_utc": "2026-11-14",
-  "model_id": "stand-in-calibrated",
-  "daily_requests": 1000,
-  "daily_tokens": 200000,
-  "day_reset_timestamp": 1794700800.0,
-  "updated_at": 1794615561.9016013
+  "model_id": "qwen/qwen3.8-27b",
+  "daily_requests": 219,
+  "daily_tokens": 67950,
+  "day_reset_timestamp": 1794633669.7798553,
+  "updated_at": 1794620795.3288515
 }
