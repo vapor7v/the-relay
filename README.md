@@ -1,3 +1,4 @@
+
 # The Relay — Rate-Limited Research Paper Q&A Pipeline
 
 A production-grade, rate-limited research paper Q&A pipeline engineered to query dense scientific corpora under strict provider quotas and latency constraints.
@@ -30,9 +31,9 @@ All three PDFs are stored and pre-indexed in `relay/papers/`.
   2. *Step 2: Passage Retrieval*: TF-IDF sparse vector retrieval over chunked paper texts with page tracking.
   3. *Step 3: Answer Drafting*: Streaming synthesis with token-by-token generation and draft TTFT tracking.
   4. *Step 4: Citation Verification*: Automated fact-checker verifying claims against retrieved primary sources. **Hard constraint: Never bypassed under quota or budget pressure.**
-- **Dual Token-Bucket Admission Control**: Models RPM (30 baseline/60 burst), TPM (8,000), ITPM (7,000 ceiling), RPD (1,000 active / 14,400 tier ceiling), and TPD (500,000). Updates dynamically from provider HTTP headers (`retry-after`, `x-ratelimit-*`).
+- **Dual Token-Bucket Admission Control**: Models published Developer-plan base reference: RPM (30), TPM (8,000), ITPM (7,000 input ceiling), RPD (1,000 active cap), and TPD (200,000). Updates dynamically from provider HTTP headers (`retry-after`, `x-ratelimit-*`).
 - **Persistent Quota State**: Tracks usage against 00:00:00 UTC and persists daily quota state to `experiments/logs/quota_state.json` across process restarts.
-- **Hierarchical Monotonic Deadlines**: Strict timeout propagation (`QUEUE_TIMEOUT_S = 30s`, `REQUEST_TIMEOUT_S = 60s`, `PIPELINE_TIMEOUT_S = 120s`). Requests aborted on deadline immediately release queue slots and concurrency counters.
+- **Hierarchical Monotonic Deadlines**: Strict timeout propagation (`QUEUE_TIMEOUT_S = 15s`, `API_TIMEOUT_S = 30s`, `PIPELINE_TIMEOUT_S = 60s`). Requests aborted on deadline immediately release queue slots and concurrency counters.
 - **Accurate Latency Telemetry**: Distinguishes internal draft TTFT (`draft_ttft_ms`) from user-visible TTFT (`user_visible_ttft_ms`). Enforces `first_token_ms <= total_ms` without artificial clamping; null TTFT for refused/failed requests.
 
 ---
@@ -161,7 +162,7 @@ Dynamically verifies that the compiled document does not exceed the strict 2-pag
 
 ## 6. Automated Test Suite
 
-Run the full pytest suite (31 unit tests):
+Run the full pytest suite (33 unit tests):
 ```bash
 pytest tests/ -v
 ```

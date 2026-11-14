@@ -139,6 +139,8 @@ class Pipeline:
             queue_length=self.rate_limiter.current_queue_length,
         )
 
+        ev_cb = self._make_event_callback(request_id, scenario, source)
+
         try:
             # ---------------------------------------------------------------
             # Step 1: Query Analysis (LLM call)
@@ -178,6 +180,7 @@ class Pipeline:
             analysis_resp = await self.llm.chat_stream(
                 messages=[{"role": "user", "content": QUERY_ANALYSIS_PROMPT.format(question=question)}],
                 temperature=0.1, max_tokens=200, deadline=deadline,
+                stage="step1_analysis", on_event=ev_cb,
             )
 
             total_tokens_in += analysis_resp.tokens_in
@@ -286,6 +289,7 @@ class Pipeline:
                         passages=passages_text, question=question
                     )}],
                     temperature=0.2, max_tokens=800, deadline=deadline,
+                    stage="step3_drafting", on_event=ev_cb,
                 )
 
                 total_tokens_in += draft_resp.tokens_in
@@ -347,6 +351,7 @@ class Pipeline:
                         passages=passages_text, answer=draft_answer
                     )}],
                     temperature=0.1, max_tokens=300, deadline=deadline,
+                    stage="step4_verification", on_event=ev_cb,
                 )
 
                 total_tokens_in += check_resp.tokens_in
@@ -403,13 +408,29 @@ class Pipeline:
         except asyncio.TimeoutError:
             status = "timeout"
             answer = f"Pipeline execution exceeded end-to-end deadline ({PIPELINE_TIMEOUT_S:.0f}s)."
+            await self.csv_logger.log_event(
+                request_id=request_id, scenario=scenario, source=source,
+                event_type="request_timeout", stage="pipeline",
+                details=f"exceeded deadline {PIPELINE_TIMEOUT_S:.1f}s",
+            )
         except asyncio.CancelledError:
             status = "timeout"
             answer = "Pipeline execution was cancelled."
+            await self.csv_logger.log_event(
+                request_id=request_id, scenario=scenario, source=source,
+                event_type="request_cancelled", stage="pipeline",
+                details="task cancelled by client/runner",
+            )
+            self.rate_limiter.release_reservation()
             raise
         except Exception as e:
             status = "error"
             answer = f"Pipeline internal error: {str(e)}"
+            await self.csv_logger.log_event(
+                request_id=request_id, scenario=scenario, source=source,
+                event_type="request_error", stage="pipeline",
+                details=str(e)[:100],
+            )
 
         total_ms = (time.monotonic() - t_start) * 1000.0
 
@@ -427,6 +448,16 @@ class Pipeline:
             scenario, source, start_timestamp,
             retrieved_chunk_labels, verification_passed,
         )
+
+    def _make_event_callback(self, request_id: str, scenario: str, source: str):
+        """Construct an asynchronous event logging callback for model call telemetry."""
+        async def cb(event_type: str, stage: str, details: str = ""):
+            await self.csv_logger.log_event(
+                request_id=request_id, scenario=scenario, source=source,
+                event_type=event_type, stage=stage, details=details,
+                queue_length=self.rate_limiter.current_queue_length,
+            )
+        return cb
 
     def _format_passages(self, chunks: List[Chunk]) -> str:
         parts = []
@@ -513,6 +544,30 @@ class Pipeline:
                 eval_details["final_grade"] = "wrong"
                 eval_details["failure_reason"] = f"Missing valid citation referencing expected paper ({expected_paper})."
                 return "wrong", eval_details
+
+            # Evidence alignment check: ensure cited paper exists in retrieved chunks
+            if retrieved_chunks and expected_paper:
+                retrieved_lower = " ".join(retrieved_chunks).lower()
+                if expected_paper not in retrieved_lower:
+                    eval_details["final_grade"] = "wrong"
+                    eval_details["failure_reason"] = f"Citation references {expected_paper}, but no passages from {expected_paper} were retrieved in top-k."
+                    return "wrong", eval_details
+
+            # Explicit failure conditions check
+            ans_lower = answer.lower()
+            for fail_cond in matched_q.get("explicit_failure_conditions", []):
+                fail_lower = fail_cond.lower()
+                # Check for wrong paper citation
+                if "cites wrong paper" in fail_lower or "cites moshi" in fail_lower:
+                    if expected_paper == "attention" and any(wrong_p in ans_lower for wrong_p in ["moshi", "dynamic chunking"]):
+                        eval_details["final_grade"] = "wrong"
+                        eval_details["failure_reason"] = f"Violated failure condition: Cited wrong paper ({fail_cond})."
+                        return "wrong", eval_details
+                if "claims a number other than 8" in fail_lower:
+                    if "16 head" in ans_lower or "12 head" in ans_lower:
+                        eval_details["final_grade"] = "wrong"
+                        eval_details["failure_reason"] = f"Violated failure condition: {fail_cond}."
+                        return "wrong", eval_details
 
             # Claim-by-claim evaluation
             required_claims = matched_q.get("required_claims", [])

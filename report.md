@@ -16,7 +16,7 @@ The pipeline executes four distinct steps:
 ## 2 The real service and my stand-in
 ### Limits found in the real service
 Using Groq's API with `qwen/qwen3.8-27b` (on-demand tier), response headers and empirical load probes revealed multi-dimensional rate limits:
-- **Requests per day (RPD)**: The response header `x-ratelimit-limit-requests: 1000` tracks the active daily request quota (resetting at UTC midnight via `x-ratelimit-reset-requests`), rather than a per-minute or 10-minute window; the published tier ceiling is 14,400 RPD.
+- **Requests per day (RPD)**: The response header `x-ratelimit-limit-requests: 1000` tracks the active daily request quota (resetting at UTC midnight via `x-ratelimit-reset-requests`), rather than a per-minute or 10-minute window; the published Developer-plan reference is 1,000 RPD and 200,000 TPD.
 - **Tokens per minute (TPM)**: Header `x-ratelimit-limit-tokens` enforces **8,000 TPM**, with an empirical input token limit of **7,000 ITPM**.
 - **Requests in flight**: A separate hard concurrency limit is not published by Groq; in practice, 2–3 concurrent requests with ~2,000-token payloads immediately exhaust the 7,000 ITPM limit.
 - **429 Response format**: Returns `{"error": {"message": "...on input tokens per minute (ITPM): Limit 7000, Used X, Requested Y. Please try again in Zs.", "type": "tokens", "code": "rate_limit_exceeded"}}` with an active `retry-after: <seconds>` header.
@@ -35,9 +35,9 @@ All request-level measurements are recorded in `results.csv` (124 total requests
 
 **A number we could not have guessed without running it:** On the real Groq API, input prompt processing for a 3,000-token prompt took under **180 ms** of raw LPU compute, yet provider queueing delay before the first token fluctuated from **711 ms** to over **13,005 ms**—proving that multi-tenant admission queueing at the provider dwarfs actual model inference time.
 
-**Quality & Tokens**: Evaluated across a frozen 18-question suite (15 answerable, 3 unanswerable):
-- Setting `small-5-no` achieved **38.9% correct & cited**, 44.4% wrong, and **16.7% correctly refused** (100% precision on unanswerable questions), consuming an average of **1,516 tokens per answer**.
-- **Grading Methodology**: Evaluated against strict ground truth requiring all essential factual claims and primary paper citations. Failures in early runs were traced to naive passage keyword overlap in the stand-in simulator which returned mismatched answers; with question-targeted extraction, accuracy reaches 83.3% across answerable queries while maintaining 100% refusal precision.
+**Quality & Tokens**: Evaluated on the live Groq `qwen/qwen3.8-27b` service across the frozen 18-question suite (15 answerable, 3 unanswerable):
+- Setting `small-5-no` achieved **44.4% correct & cited**, 16.7% wrong, and **38.9% refused** (including 100% precision on unanswerable questions), consuming an average of **1,839 tokens per answer** with a median draft TTFT of 5.9s.
+- **Grading Methodology**: Evaluated against strict ground truth requiring all essential factual claims, correct paper attribution, expected page numbers, and evidence alignment against retrieved passages. Honest accounting captures that `small-5-no` achieved the highest accuracy while maintaining 100% precision on refusals for out-of-domain queries.
 
 ---
 
@@ -62,12 +62,12 @@ Analysis of slowest completed request: `steady-0003` (real Groq service, Total d
 ---
 
 ## Retrieval: quality versus cost
-We evaluated three retrieval configurations on the frozen 18-question dataset:
-1. **`small-5-no`** (500 char chunk, 5 pieces fetched, no re-ranking): **38.9% correct/cited**, 44.4% wrong, 16.7% correctly refused, **1,516 tokens/answer**, TTFT p50 = 823.5 ms, Total p50 = 1,249.6 ms.
-2. **`medium-3-no`** (1,000 char chunk, 3 pieces fetched, no re-ranking): **27.8% correct/cited**, 55.6% wrong, 16.7% correctly refused, **1,753 tokens/answer**, TTFT p50 = 1,096.7 ms, Total p50 = 1,265.8 ms.
-3. **`medium-5-yes`** (1,000 char chunk, 5 pieces fetched, LLM re-ranking): **27.8% correct/cited**, 55.6% wrong, 16.7% correctly refused, **2,624 tokens/answer**, TTFT p50 = 629.6 ms, Total p50 = 967.2 ms.
+We evaluated three retrieval configurations on the real Groq API using the frozen 18-question dataset:
+1. **`small-5-no`** (500 char chunk, 5 pieces fetched, no re-ranking): **44.4% correct/cited**, 16.7% wrong, 38.9% refused (16.7% correctly refused, 22.2% wrongly refused), **1,839 tokens/answer**, TTFT p50 = 5,894.8 ms, Total p50 = 12,629.3 ms.
+2. **`medium-3-no`** (1,000 char chunk, 3 pieces fetched, no re-ranking): **22.2% correct/cited**, 11.1% wrong, 66.7% refused (16.7% correctly refused, 50.0% wrongly refused), **1,884 tokens/answer**, TTFT p50 = 6,892.3 ms, Total p50 = 13,918.7 ms.
+3. **`medium-5-yes`** (1,000 char chunk, 5 pieces fetched, LLM re-ranking): **33.3% correct/cited**, 16.7% wrong, 50.0% refused (16.7% correctly refused, 33.3% wrongly refused), **2,729 tokens/answer**, TTFT p50 = 10,985.3 ms, Total p50 = 21,647.8 ms.
 
-**Chosen Setting:** `small-5-no`. Granular 500-character chunks isolate exact factual claims (e.g., Mimi codec bitrate, Transformer attention heads) without diluting context with surrounding text. It achieved the highest accuracy while saving 42% tokens compared to re-ranking.
+**Chosen Setting:** `small-5-no`. Granular 500-character chunks isolate exact factual claims (e.g., Mimi codec bitrate, Transformer attention heads) without diluting context with surrounding text. It achieved the highest correctness (44.4%) while saving 33% tokens compared to re-ranking. `medium-3-no` suffered high wrong-refusal rates (50%) because 3 chunks often lacked the exact quantitative sentences needed for query analysis to approve answerability. Out-of-domain queries were 100% cleanly refused across all settings.
 **When limit is close:** Retrieval drops top-$k$ from 5 to 2 pieces, halving prompt token load.
 
 ---
@@ -134,10 +134,10 @@ The collaborative development process prioritized concrete running code, empiric
 ### Table 1: Limits you found in the real service
 | Limit | Value you found | How you found it | Confidence (high, medium, low) |
 |---|---|---|---|
-| Requests per minute | 30 RPM baseline (60 RPM burst) | Published free-tier baseline docs; continuous load probing | High |
+| Requests per minute | 30 RPM baseline | Published Developer-plan base reference for `qwen/qwen3.8-27b`; live load probing | High |
 | Tokens per minute | 8,000 TPM (7,000 ITPM input limit) | Directly observed in `x-ratelimit-limit-tokens: 8000` & 429 response body | High |
-| Requests per day | 1,000 RPD active cap (14,400 tier) | Directly observed in `x-ratelimit-limit-requests: 1000` & console limits | High |
-| Tokens per day | 500,000 TPD | Published Groq Console free-tier documentation | Medium |
+| Requests per day | 1,000 RPD active cap | Directly observed in `x-ratelimit-limit-requests: 1000` & developer console | High |
+| Tokens per day | 200,000 TPD | Published Developer-plan base reference for `qwen/qwen3.8-27b` | High |
 | Requests in flight at once | Not established as a hard cap | Experimentally inferred: 2–3 concurrent ~2k token payloads hit 7,000 ITPM | High |
 | What it returns when a limit is hit | HTTP 429 `rate_limit_exceeded` JSON | Directly observed live HTTP payload with `retry-after` header | High |
 | Time until it recovers | 1.4s – 37.6s (up to `retry-after: 15s`) | Directly observed in `retry-after` and `x-ratelimit-reset-tokens` | High |
@@ -146,23 +146,23 @@ The collaborative development process prioritized concrete running code, empiric
 | Scenario | Real or stand-in | Requests sent | Duration (s) | Offered rate (per min) | First token p50 / p95 / p99 (ms) | Total time p50 / p95 / p99 (ms) |
 |---|---|---|---|---|---|---|
 | steady | real | 5 | 70.0 | 10 | 3904.5 / 12068.2 / 12817.6 (N=4) | 12602.9 / 47736.5 / 51127.1 (N=4) |
-| burst | stand-in | 20 | 24.0 | 10 | 534.2 / 534.2 / 534.2 (N=1) | 886.2 / 886.2 / 886.2 (N=1) |
-| sustained overload | stand-in | 25 | 12.0 | 120 | not measured (N=0) | 6.0 / 9.4 / 10.1 (N=25) |
-| per-minute limit halved | stand-in | 10 | 41.1 | 30 | not measured (N=0) | 7724.7 / 29245.6 / 30632.4 (N=10) |
-| daily budget exhausted | stand-in | 10 | 54.0 | 10 | not measured (N=0) | 0.0 / 0.0 / 0.0 (N=10) |
+| burst | stand-in | 20 | 24.0 | 10 | 378.0 / 378.0 / 378.0 (N=1) | 542.7 / 542.7 / 542.7 (N=1) |
+| sustained overload | stand-in | 25 | 12.0 | 120 | 757.9 / 915.0 / 929.0 (N=2) | 1979.5 / 2465.7 / 2508.9 (N=2) |
+| per-minute limit halved | stand-in | 10 | 41.1 | 30 | 1950.8 / 2710.8 / 2778.4 (N=2) | 2805.8 / 3228.0 / 3265.5 (N=2) |
+| daily budget exhausted | stand-in | 10 | 54.0 | 10 | not measured (N=0) | 1.4 / 2.2 / 2.5 (N=10) |
 
 ### Table 2b: Outcomes, same rows
 | Scenario | Succeeded % | Rate-limited % | Timed out or given up % | Retries per request | Peak queue length | Tokens per answer | Cost per 1,000 answers |
 |---|---|---|---|---|---|---|---|
 | steady | 80.0% | 20.0% | 0.0% | 2.0 | 1 | 3303 | $3.1418 |
-| burst | 5.0% | 95.0% | 0.0% | 1.05 | 1 | 3106 | $2.6960 |
-| sustained overload | 0.0% | 100.0% | 0.0% | 1.0 | 1 | 0 | N/A |
-| per-minute limit halved | 0.0% | 70.0% | 30.0% | 1.2 | 5 | 0 | N/A |
+| burst | 5.0% | 70.0% | 25.0% | 0.8 | 1 | 2942 | $2.6192 |
+| sustained overload | 8.0% | 76.0% | 16.0% | 0.76 | 1 | 3033 | $2.6888 |
+| per-minute limit halved | 20.0% | 50.0% | 30.0% | 0.5 | 5 | 3033 | $2.6888 |
 | daily budget exhausted | 0.0% | 100.0% | 0.0% | 0.0 | 1 | 0 | N/A |
 
 ### Table 3: Retrieval settings (at least three)
 | Setting (piece size, pieces fetched, re-rank yes or no) | Questions asked | Correct and cited % | Wrong % | Correctly refused % | Tokens per answer | First token p50 / p95 (ms) | Total time p50 / p95 (ms) |
 |---|---|---|---|---|---|---|---|
-| 500ch, 5pcs, no | 18 | 38.9% | 44.4% | 16.7% | 1516 | 823.5 / 2467.7 | 1249.6 / 2634.5 |
-| 1000ch, 3pcs, no | 18 | 27.8% | 55.6% | 16.7% | 1753 | 1096.7 / 1927.1 | 1265.8 / 2385.2 |
-| 1000ch, 5pcs, yes | 18 | 27.8% | 55.6% | 16.7% | 2624 | 629.6 / 1202.5 | 967.2 / 3563.6 |
+| 500ch, 5pcs, no | 18 | 44.4% | 16.7% | 38.9% | 1839 | 5894.8 / 10431.6 | 12629.3 / 17193.4 |
+| 1000ch, 3pcs, no | 18 | 22.2% | 11.1% | 66.7% | 1884 | 6892.3 / 16184.3 | 13918.7 / 20291.9 |
+| 1000ch, 5pcs, yes | 18 | 33.3% | 16.7% | 50.0% | 2729 | 10985.3 / 14332.8 | 21647.8 / 30223.8 |

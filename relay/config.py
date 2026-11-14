@@ -50,26 +50,34 @@ def get_groq_api_key(allow_missing: bool = False) -> str:
 #
 # Distinguishes:
 # 1. Published limits (official documentation at console.groq.com/docs/rate-limits)
+#    Developer-plan base reference for qwen/qwen3.8-27b:
+#    - RPM: 30
+#    - RPD: 1,000
+#    - TPM: 8,000
+#    - TPD: 200,000
 # 2. Directly observed limits (live response headers and 429 error payloads)
+#    - x-ratelimit-limit-requests: 1,000 (RPD)
+#    - x-ratelimit-limit-tokens: 8,000 (TPM)
+#    - 429 error bodies enforce a 7,000 ITPM input token limit
 # 3. Simulated values (used for load scenarios on stand-in simulator)
 # ---------------------------------------------------------------------------
 @dataclass
 class RateLimiterConfig:
     """Explicitly configurable multi-dimensional rate limits."""
     model_id: str = "qwen/qwen3.8-27b"
-    rpm: int = 60                   # Requests per minute (proactive client rate)
-    tpm: int = 8_000                # Total tokens per minute limit
+    rpm: int = 30                   # Requests per minute (published base limit)
+    tpm: int = 8_000                # Total tokens per minute limit (published & observed)
     itpm: Optional[int] = 7_000     # Input tokens per minute limit (observed in 429 bodies)
     otpm: Optional[int] = None      # Output tokens per minute (if separately enforced)
-    rpd: int = 1_000                # Requests per day (active observed cap; tier ceiling 14,400)
-    tpd: int = 500_000              # Tokens per day
+    rpd: int = 1_000                # Requests per day (published & observed cap)
+    tpd: int = 200_000              # Tokens per day (published base limit for Qwen 27B)
     max_queue: int = 50             # Max queue depth before immediate load shedding
     reset_policy: str = "utc_midnight" # "utc_midnight", "sliding_window", or "provider_header"
     # Audit documentation fields
     published_rpm: int = 30
     published_tpm: int = 8_000
-    published_rpd: int = 14_400
-    published_tpd: int = 500_000
+    published_rpd: int = 1_000
+    published_tpd: int = 200_000
     source_type: str = "observed"   # "observed", "published", "simulated"
 
 
@@ -77,15 +85,15 @@ class RateLimiterConfig:
 MODEL_PROFILES: Dict[str, RateLimiterConfig] = {
     "qwen/qwen3.8-27b": RateLimiterConfig(
         model_id="qwen/qwen3.8-27b",
-        rpm=60,
+        rpm=30,
         tpm=8_000,
         itpm=7_000,
         rpd=1_000,
-        tpd=500_000,
+        tpd=200_000,
         published_rpm=30,
         published_tpm=8_000,
-        published_rpd=14_400,
-        published_tpd=500_000,
+        published_rpd=1_000,
+        published_tpd=200_000,
         source_type="observed",
     ),
     "llama-3.1-8b-instant": RateLimiterConfig(
@@ -106,11 +114,11 @@ MODEL_PROFILES: Dict[str, RateLimiterConfig] = {
 # Stand-in simulator profiles
 SIMULATOR_DEFAULT_CONFIG = RateLimiterConfig(
     model_id="stand-in-calibrated",
-    rpm=60,
+    rpm=30,
     tpm=7_000,
     itpm=7_000,
-    rpd=14_400,
-    tpd=500_000,
+    rpd=1_000,
+    tpd=200_000,
     max_queue=50,
     source_type="simulated",
 )
@@ -120,8 +128,8 @@ SIMULATOR_HALVED_CONFIG = RateLimiterConfig(
     rpm=15,
     tpm=3_500,
     itpm=3_500,
-    rpd=14_400,
-    tpd=500_000,
+    rpd=1_000,
+    tpd=200_000,
     max_queue=50,
     source_type="simulated",
 )

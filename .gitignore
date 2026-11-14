@@ -21,3 +21,4 @@ backups/
 scratch/
 test_*.csv
 *.tmp
+*.zip

@@ -88,11 +88,11 @@ The rate limiter in `relay/rate_limiter.py` manages multiple orthogonal resource
 
 | Resource Dimension | Free / On-Demand Limit | Real Provider Behavior |
 |---|---|---|
-| **Requests Per Minute (RPM)** | 30 baseline / 60 burst | Token bucket refilling continuously at $RPM / 60$ tokens/s |
+| **Requests Per Minute (RPM)** | 30 RPM | Token bucket refilling continuously at $RPM / 60$ tokens/s |
 | **Tokens Per Minute (TPM)** | 8,000 TPM | Token bucket refilling at $TPM / 60$ tokens/s |
 | **Input Tokens Per Minute (ITPM)**| 7,000 ITPM | Enforced in Groq 429 error bodies |
-| **Requests Per Day (RPD)** | 1,000 active / 14,400 tier ceiling | Strict daily counter resetting at 00:00:00 UTC |
-| **Tokens Per Day (TPD)** | 500,000 TPD | Daily token counter resetting at 00:00:00 UTC |
+| **Requests Per Day (RPD)** | 1,000 active cap / published reference | Strict daily counter resetting at 00:00:00 UTC |
+| **Tokens Per Day (TPD)** | 200,000 TPD | Daily token counter resetting at 00:00:00 UTC |
 
 ### Key Engineering Features
 
@@ -111,17 +111,17 @@ The rate limiter in `relay/rate_limiter.py` manages multiple orthogonal resource
 
 To prevent runaway requests and resource starvation under heavy load, the system enforces a strict deadline hierarchy:
 
-1. **Queue Admission Timeout (`QUEUE_TIMEOUT_S = 30.0s`)**: The maximum duration a request may wait in the rate limiter admission queue before being shed.
-2. **External Request Timeout (`REQUEST_TIMEOUT_S = 60.0s`)**: Per-HTTP call timeout enforced via `aiohttp.ClientTimeout`.
-3. **End-to-End Pipeline Deadline (`PIPELINE_TIMEOUT_S = 120.0s`)**: A shared monotonic deadline (`time.monotonic() + PIPELINE_TIMEOUT_S`) instantiated at request entry.
+1. **Queue Admission Timeout (`QUEUE_TIMEOUT_S = 15.0s`)**: The maximum duration a request may wait in the rate limiter admission queue before being shed.
+2. **External Request Timeout (`API_TIMEOUT_S = 30.0s`)**: Per-HTTP streaming call timeout enforced via `httpx.Timeout`.
+3. **End-to-End Pipeline Deadline (`PIPELINE_TIMEOUT_S = 60.0s`)**: A shared monotonic deadline (`time.monotonic() + PIPELINE_TIMEOUT_S`) instantiated at request entry.
 
 ```
-Request Arrival (t0) ───[ Monotonic Deadline: t0 + 120s ]───────────────────────► Expiry
+Request Arrival (t0) ───[ Monotonic Deadline: t0 + 60s ]────────────────────────► Expiry
        │                                                                            ▲
        ├──► Step 1 (Analysis)    ── remaining = min(30s, deadline - t)              │
        ├──► Step 2 (Retrieval)   ── remaining = deadline - t                        │
-       ├──► Step 3 (Drafting)    ── remaining = min(60s, deadline - t)              │
-       └──► Step 4 (Verify Loop) ── remaining = min(60s, deadline - t) ─────────────┘
+       ├──► Step 3 (Drafting)    ── remaining = min(30s, deadline - t)              │
+       └──► Step 4 (Verify Loop) ── remaining = min(30s, deadline - t) ─────────────┘
 ```
 
 If the remaining time expires at any point:

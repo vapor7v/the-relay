@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from config import (
     DEFAULT_RETRIEVAL, get_groq_api_key, GROQ_MODEL, MODEL_PROFILES,
     PRICE_INPUT_PER_M, PRICE_OUTPUT_PER_M,
-    SCENARIO_METADATA_JSON, SIMULATOR_DEFAULT_CONFIG,
+    SCENARIO_METADATA_JSON, SIMULATOR_DEFAULT_CONFIG, SIMULATOR_HALVED_CONFIG,
 )
 from indexer import PaperIndex
 from llm_client import LLMClient
@@ -39,6 +39,58 @@ INDEX_PATH = os.path.join(os.path.dirname(__file__), "paper_index.pkl")
 
 # Representative answerable questions for load testing
 LOAD_QUESTIONS = [q["question"] for q in QUESTIONS[:10]]
+
+SCENARIOS = {
+    "steady": {
+        "num_requests": 5,
+        "rate_per_minute": 10,
+        "duration_s": 70,
+        "use_simulator": False,
+    },
+    "burst": {
+        "num_requests": 5,
+        "rate_per_minute": 10,
+        "duration_s": 24,
+        "use_simulator": True,
+        "burst_at": 2.0,
+        "burst_count": 15,
+    },
+    "sustained_overload": {
+        "num_requests": 25,
+        "rate_per_minute": 120,
+        "duration_s": 12,
+        "use_simulator": True,
+    },
+    "per_minute_limit_halved": {
+        "num_requests": 10,
+        "rate_per_minute": 30,
+        "duration_s": 41,
+        "use_simulator": True,
+        "rl_config": SIMULATOR_HALVED_CONFIG,
+    },
+    "daily_budget_exhausted": {
+        "num_requests": 10,
+        "rate_per_minute": 10,
+        "duration_s": 54,
+        "use_simulator": True,
+        "pre_exhaust_daily": True,
+    },
+}
+
+
+def clean_scenario_from_csv(csv_path: str, scenario_name: str):
+    """Remove existing rows for a specific scenario before re-running to avoid duplicates."""
+    import csv
+    if not os.path.exists(csv_path):
+        return
+    with open(csv_path, "r", newline="") as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames
+        rows = [r for r in reader if r.get("scenario") != scenario_name]
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 async def run_scenario(
@@ -70,6 +122,8 @@ async def run_scenario(
     rl_config = rl_config or (SIMULATOR_DEFAULT_CONFIG if use_simulator else MODEL_PROFILES.get(GROQ_MODEL, MODEL_PROFILES["qwen/qwen3.8-27b"]))
     rl = TokenBucketRateLimiter(rl_config)
     logger = CSVLogger()
+    clean_scenario_from_csv(logger.path, name)
+    clean_scenario_from_csv(logger.events_path, name)
     pipe = Pipeline(idx, llm, rl, logger)
 
     # Pre-exhaust daily budget completely if required by scenario
@@ -104,7 +158,7 @@ async def run_scenario(
             question=question,
             scenario=name,
             source=source,
-            request_id=f"{name}-{q_idx+1:04d}",
+            request_id=f"{name}-{q_idx:04d}",
         )
         return result
 
@@ -284,17 +338,44 @@ async def run_scenario(
     return summary
 
 
-def _update_scenario_metadata(summary: Dict[str, Any]):
-    """Update experiments/logs/scenario_metadata.json with traceable scenario data."""
-    os.makedirs(os.path.dirname(SCENARIO_METADATA_JSON), exist_ok=True)
+def _update_scenario_metadata(summary: Dict[str, Any], meta_path: str = SCENARIO_METADATA_JSON):
+    """Update experiments/logs/scenario_metadata.json with traceable scenario data in a consistent dictionary format."""
+    os.makedirs(os.path.dirname(meta_path), exist_ok=True)
     existing: Dict[str, Any] = {}
-    if os.path.exists(SCENARIO_METADATA_JSON):
+    if os.path.exists(meta_path):
         try:
-            with open(SCENARIO_METADATA_JSON, "r") as f:
-                existing = json.load(f)
+            with open(meta_path, "r") as f:
+                raw = json.load(f)
+                if isinstance(raw, list):
+                    for item in raw:
+                        if isinstance(item, dict) and "scenario" in item:
+                            existing[item["scenario"]] = item
+                elif isinstance(raw, dict):
+                    existing = raw
         except Exception:
             existing = {}
 
     existing[summary["scenario"]] = summary
-    with open(SCENARIO_METADATA_JSON, "w") as f:
+    with open(meta_path, "w") as f:
         json.dump(existing, f, indent=2)
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="The Relay - Load Test Runner")
+    parser.add_argument("--scenario", choices=list(SCENARIOS.keys()) + ["all"], default="all",
+                        help="Scenario to run ('steady', 'burst', 'sustained_overload', 'per_minute_limit_halved', 'daily_budget_exhausted', or 'all')")
+    args = parser.parse_args()
+
+    async def _run():
+        if args.scenario == "all":
+            for sc_name, sc_params in SCENARIOS.items():
+                await run_scenario(name=sc_name, **sc_params)
+        else:
+            await run_scenario(name=args.scenario, **SCENARIOS[args.scenario])
+
+    asyncio.run(_run())
+
+
+if __name__ == "__main__":
+    main()

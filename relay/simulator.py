@@ -30,10 +30,10 @@ DEFAULT_CALIBRATION = {
     "ttft_sample_stddev_log": 0.679, # Raw sample stddev of log(TTFT) from 10 pilot runs
     "tps": 520.0,                    # Tokens per second
     "tps_stddev": 135.0,             # Stddev for TPS
-    "rpm_limit": 60,
-    "tpm_limit": 7000,
-    "rpd_limit": 14400,
-    "tpd_limit": 500000,
+    "rpm_limit": 30,
+    "tpm_limit": 8000,
+    "rpd_limit": 1000,
+    "tpd_limit": 200000,
     "failure_rate": 0.01,            # 1% transient failure
     "load_slowdown_factor": 15.0,    # Extra TTFT ms per concurrent in-flight request
 }
@@ -299,14 +299,14 @@ class SimulatorHandler(BaseHTTPRequestHandler):
             self.send_response(429)
             self.send_header("Content-Type", "application/json")
             self.send_header("retry-after", str(int(math.ceil(retry_after))))
-            self.send_header("x-ratelimit-limit-requests", str(self.state.cal.get("rpd_limit", 14400)))
-            self.send_header("x-ratelimit-limit-tokens", str(self.state.cal.get("tpm_limit", 7000)))
+            self.send_header("x-ratelimit-limit-requests", str(self.state.cal.get("rpd_limit", 1000)))
+            self.send_header("x-ratelimit-limit-tokens", str(self.state.cal.get("tpm_limit", 8000)))
             self.send_header("x-ratelimit-remaining-tokens", "0")
             self.send_header("x-ratelimit-reset-tokens", f"{int(math.ceil(retry_after))}s")
             self.end_headers()
             error_body = json.dumps({
                 "error": {
-                    "message": f"Rate limit reached on input tokens per minute (ITPM): Limit {self.state.cal.get('tpm_limit', 7000)}. Please try again in {int(retry_after)}s.",
+                    "message": f"Rate limit reached on input tokens per minute (ITPM): Limit {self.state.cal.get('tpm_limit', 8000)}. Please try again in {int(retry_after)}s.",
                     "type": "tokens",
                     "code": "rate_limit_exceeded",
                 }
@@ -342,8 +342,8 @@ class SimulatorHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-cache")
         self.send_header("Connection", "keep-alive")
-        self.send_header("x-ratelimit-limit-requests", str(self.state.cal.get("rpd_limit", 14400)))
-        self.send_header("x-ratelimit-limit-tokens", str(self.state.cal.get("tpm_limit", 7000)))
+        self.send_header("x-ratelimit-limit-requests", str(self.state.cal.get("rpd_limit", 1000)))
+        self.send_header("x-ratelimit-limit-tokens", str(self.state.cal.get("tpm_limit", 8000)))
         self.end_headers()
 
         chat_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"

@@ -110,6 +110,49 @@ class TestSimulator(unittest.TestCase):
         resp, toks = generate_response_text(messages)
         self.assertIn('"valid": true', resp)
 
+    def test_scenario_metadata_persistence_and_migration(self):
+        """Test writing, updating, and migrating scenario metadata in dictionary format."""
+        import tempfile
+        import json
+        from runner import _update_scenario_metadata
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            meta_path = os.path.join(tmpdir, "scenario_metadata.json")
+
+            # 1. Test writing new scenario
+            _update_scenario_metadata({"scenario": "burst", "duration_s": 24.0}, meta_path=meta_path)
+            with open(meta_path, "r") as f:
+                data = json.load(f)
+            self.assertIsInstance(data, dict)
+            self.assertIn("burst", data)
+            self.assertEqual(data["burst"]["duration_s"], 24.0)
+
+            # 2. Test adding second scenario
+            _update_scenario_metadata({"scenario": "steady", "duration_s": 70.0}, meta_path=meta_path)
+            with open(meta_path, "r") as f:
+                data = json.load(f)
+            self.assertEqual(len(data), 2)
+            self.assertIn("steady", data)
+
+            # 3. Test updating existing scenario
+            _update_scenario_metadata({"scenario": "burst", "duration_s": 30.0}, meta_path=meta_path)
+            with open(meta_path, "r") as f:
+                data = json.load(f)
+            self.assertEqual(len(data), 2)
+            self.assertEqual(data["burst"]["duration_s"], 30.0)
+
+            # 4. Test legacy list migration
+            list_path = os.path.join(tmpdir, "legacy_list.json")
+            with open(list_path, "w") as f:
+                json.dump([{"scenario": "sc1", "val": 1}, {"scenario": "sc2", "val": 2}], f)
+            _update_scenario_metadata({"scenario": "sc3", "val": 3}, meta_path=list_path)
+            with open(list_path, "r") as f:
+                migrated = json.load(f)
+            self.assertIsInstance(migrated, dict)
+            self.assertIn("sc1", migrated)
+            self.assertIn("sc2", migrated)
+            self.assertIn("sc3", migrated)
+
 
 if __name__ == "__main__":
     unittest.main()

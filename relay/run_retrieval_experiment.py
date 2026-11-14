@@ -6,14 +6,17 @@ Evaluates:
 3. medium-5-yes (1000 char chunk, 5 pieces fetched, LLM re-ranking)
 
 Outputs:
-- experiments/reports/retrieval_evaluation_details.json
-- relay/retrieval_summary.json
+- results.csv (genuine request records for all 54 questions)
+- experiments/reports/retrieval_evaluation_details.json (claim-by-claim evaluation)
+- relay/retrieval_summary.json (summary metrics for Table 3)
 """
 import asyncio
 import os
 import sys
 import json
-from typing import Dict, Any, List
+import argparse
+import csv
+from typing import Dict, Any, List, Tuple, Optional
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -21,30 +24,74 @@ sys.path.insert(0, os.path.dirname(__file__))
 from config import (
     RETRIEVAL_SETTINGS, RetrievalSetting,
     RETRIEVAL_DETAILS_JSON, RESULTS_CSV,
+    RateLimiterConfig, MODEL_PROFILES, GROQ_MODEL,
 )
 from indexer import PaperIndex
 from llm_client import LLMClient
-from rate_limiter import TokenBucketRateLimiter, RateLimiterConfig
+from rate_limiter import TokenBucketRateLimiter
 from csv_logger import CSVLogger
 from pipeline import Pipeline, PipelineResult
 from questions import QUESTIONS
 from simulator import run_simulator
 
 
-async def evaluate_retrieval_suite(persist_to_results_csv: bool = False):
-    """Run retrieval evaluation across all three settings."""
-    server = run_simulator(seed=42)
-    from simulator import _global_state
-    if _global_state:
-        # Provide ample budget in simulator for evaluation suite
-        _global_state.cal["rpm_limit"] = 500
-        _global_state.cal["tpm_limit"] = 1000000
-        _global_state.cal["failure_rate"] = 0.0
+def clean_scenario_from_csv(csv_path: str, scenario_name: str):
+    """Remove existing rows for a specific scenario before re-running."""
+    if not os.path.exists(csv_path):
+        return
+    with open(csv_path, "r", newline="") as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames
+        rows = [r for r in reader if r.get("scenario") != scenario_name]
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+async def evaluate_retrieval_suite(
+    use_simulator: bool = False,
+    persist_to_results_csv: bool = True,
+    delay_between_requests: float = 2.0,
+    target_setting_name: Optional[str] = None,
+):
+    """Run retrieval evaluation across three configurations."""
+    if use_simulator:
+        run_simulator(seed=42)
+        from simulator import _global_state
+        if _global_state:
+            _global_state.cal["rpm_limit"] = 500
+            _global_state.cal["tpm_limit"] = 1000000
+            _global_state.cal["failure_rate"] = 0.0
 
     summary_list = []
+    # Load existing evaluation details if present
     all_evaluation_details: Dict[str, List[Dict[str, Any]]] = {}
+    if os.path.exists(RETRIEVAL_DETAILS_JSON):
+        try:
+            with open(RETRIEVAL_DETAILS_JSON, "r") as f:
+                all_evaluation_details = json.load(f)
+        except Exception:
+            all_evaluation_details = {}
 
-    for setting in RETRIEVAL_SETTINGS:
+    settings_to_run = [
+        s for s in RETRIEVAL_SETTINGS
+        if target_setting_name is None or s.name == target_setting_name
+    ]
+
+    source = "stand-in" if use_simulator else "real"
+    api_key = "sim-key" if use_simulator else None
+
+    target_csv = RESULTS_CSV if persist_to_results_csv else os.path.join(
+        os.path.dirname(__file__), "..", "scratch", "eval_temp.csv"
+    )
+    logger = CSVLogger(path=target_csv)
+
+    for setting in settings_to_run:
+        scenario_name = f"retrieval_eval_{setting.name}"
+        if persist_to_results_csv:
+            clean_scenario_from_csv(target_csv, scenario_name)
+
         idx_path = os.path.join(os.path.dirname(__file__), f"paper_index_{setting.name}.pkl")
         if not os.path.exists(idx_path):
             idx_path = os.path.join(os.path.dirname(__file__), "paper_index.pkl")
@@ -52,15 +99,13 @@ async def evaluate_retrieval_suite(persist_to_results_csv: bool = False):
         idx = PaperIndex()
         idx.load(idx_path)
 
-        llm = LLMClient(use_simulator=True, api_key="sim-key")
-        rl = TokenBucketRateLimiter(RateLimiterConfig(rpm=200, tpm=200000))
-        # Use null logger if not overwriting official CSV
-        target_csv = RESULTS_CSV if persist_to_results_csv else os.path.join(os.path.dirname(__file__), "..", "scratch", "eval_temp.csv")
-        logger = CSVLogger(path=target_csv)
+        llm = LLMClient(use_simulator=use_simulator, api_key=api_key)
+        rl_config = RateLimiterConfig(rpm=30, tpm=8000, itpm=7000, rpd=1000, tpd=200000)
+        rl = TokenBucketRateLimiter(rl_config)
         pipe = Pipeline(idx, llm, rl, logger, retrieval_setting=setting)
 
         print(f"\n{'='*75}")
-        print(f"Evaluating Retrieval Configuration: {setting.name}")
+        print(f"Evaluating Retrieval Configuration: {setting.name} ({source} provider)")
         print(f"Chunk size: {setting.chunk_size} chars | Top-k: {setting.top_k} | Re-rank: {setting.rerank}")
         print(f"{'='*75}")
 
@@ -70,8 +115,8 @@ async def evaluate_retrieval_suite(persist_to_results_csv: bool = False):
         for q in QUESTIONS:
             res = await pipe.run(
                 question=q["question"],
-                scenario=f"retrieval_eval_{setting.name}",
-                source="stand-in",
+                scenario=scenario_name,
+                source=source,
                 request_id=f"ret-{setting.name}-{q['id']}",
             )
             records.append((q, res))
@@ -113,6 +158,10 @@ async def evaluate_retrieval_suite(persist_to_results_csv: bool = False):
             status_symbol = "✓" if res.answer_grade == q["expected_grade"] else "✗"
             print(f"  {status_symbol} [{q['id']}] Grade: {res.answer_grade:<17} "
                   f"TTFT: {ft_str:<10} Total: {res.total_ms:.1f}ms | Tokens: {res.tokens_in}in/{res.tokens_out}out")
+
+            # Pacing delay between questions to stay smoothly below 30 RPM
+            if delay_between_requests > 0:
+                await asyncio.sleep(delay_between_requests)
 
         await llm.close()
         all_evaluation_details[setting.name] = setting_eval_details
@@ -173,5 +222,22 @@ async def evaluate_retrieval_suite(persist_to_results_csv: bool = False):
     return summary_list
 
 
+def main():
+    parser = argparse.ArgumentParser(description="The Relay - Retrieval Evaluation Runner")
+    parser.add_argument("--simulator", action="store_true", help="Run using stand-in simulator instead of real Groq API")
+    parser.add_argument("--setting", choices=["small-5-no", "medium-3-no", "medium-5-yes"], default=None,
+                        help="Specific setting to evaluate (default: all 3)")
+    parser.add_argument("--delay", type=float, default=2.0, help="Pacing delay between requests in seconds")
+    parser.add_argument("--no-persist", action="store_true", help="Do not persist results to results.csv")
+    args = parser.parse_args()
+
+    asyncio.run(evaluate_retrieval_suite(
+        use_simulator=args.simulator,
+        persist_to_results_csv=not args.no_persist,
+        delay_between_requests=args.delay,
+        target_setting_name=args.setting,
+    ))
+
+
 if __name__ == "__main__":
-    asyncio.run(evaluate_retrieval_suite(persist_to_results_csv=False))
+    main()

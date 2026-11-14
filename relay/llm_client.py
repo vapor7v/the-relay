@@ -94,6 +94,8 @@ class LLMClient:
         temperature: float = 0.3,
         max_tokens: int = 1024,
         deadline: Optional[float] = None,
+        stage: str = "llm_call",
+        on_event: Optional[Any] = None,
     ) -> LLMResponse:
         """Send a streaming chat completion request respecting a shared deadline."""
         retries = 0
@@ -106,6 +108,8 @@ class LLMClient:
                 remaining_s = deadline - time.monotonic()
                 if remaining_s <= 0.05:
                     total_elapsed = (time.monotonic() - t_overall_start) * 1000.0
+                    if on_event:
+                        await on_event("request_timeout", stage, f"Deadline expired before attempt {retries}")
                     return LLMResponse(
                         text="", first_token_time_ms=None, total_time_ms=total_elapsed,
                         tokens_in=0, tokens_out=0, retries=retries,
@@ -116,8 +120,11 @@ class LLMClient:
 
             call_timeout = min(API_TIMEOUT_S, max(0.1, remaining_s))
 
+            if on_event:
+                await on_event("model_call_start", stage, f"attempt={retries}, timeout_s={call_timeout:.1f}")
+
             try:
-                return await self._do_stream(
+                resp = await self._do_stream(
                     messages=messages,
                     temperature=temperature,
                     max_tokens=max_tokens,
@@ -125,15 +132,22 @@ class LLMClient:
                     call_timeout=call_timeout,
                     deadline=deadline,
                 )
+                if on_event:
+                    await on_event("model_call_end", stage, f"status={resp.status}, in={resp.tokens_in}, out={resp.tokens_out}")
+                return resp
 
             except RateLimitError as e:
                 retries += 1
                 last_headers = e.headers
+                if on_event:
+                    await on_event("retry_start", stage, f"reason=rate_limit_429, attempt={retries}, retry_after={e.retry_after}")
 
                 # If retry-after exceeds client budget or remaining deadline, abort immediately
                 if e.retry_after is not None:
                     if e.retry_after > RETRY_MAX_DELAY_S or (deadline and e.retry_after > (deadline - time.monotonic())):
                         total_elapsed = (time.monotonic() - t_overall_start) * 1000.0
+                        if on_event:
+                            await on_event("request_timeout", stage, f"retry_after={e.retry_after}s exceeds deadline")
                         return LLMResponse(
                             text="", first_token_time_ms=None, total_time_ms=total_elapsed,
                             tokens_in=0, tokens_out=0, retries=retries,
@@ -158,35 +172,53 @@ class LLMClient:
 
                 if deadline is not None and (time.monotonic() + delay) > deadline:
                     total_elapsed = (time.monotonic() - t_overall_start) * 1000.0
+                    if on_event:
+                        await on_event("request_timeout", stage, f"backoff_delay={delay:.1f}s exceeds deadline")
                     return LLMResponse(
                         text="", first_token_time_ms=None, total_time_ms=total_elapsed,
                         tokens_in=0, tokens_out=0, retries=retries,
                         status="timeout", headers=last_headers,
                     )
 
+                if on_event:
+                    await on_event("retry_backoff", stage, f"delay_s={delay:.2f}, retry_after={e.retry_after}")
                 await asyncio.sleep(delay)
+                if on_event:
+                    await on_event("retry_end", stage, f"attempt={retries}")
 
             except NonRetryableError as e:
                 total_elapsed = (time.monotonic() - t_overall_start) * 1000.0
+                if on_event:
+                    await on_event("model_call_end", stage, f"status=error, non_retryable={e}")
                 return LLMResponse(
                     text="", first_token_time_ms=None, total_time_ms=total_elapsed,
                     tokens_in=0, tokens_out=0, retries=retries,
                     status="error", headers=last_headers,
                 )
 
-            except (TimeoutError, asyncio.TimeoutError, httpx.TimeoutException):
+            except (TimeoutError, asyncio.TimeoutError, httpx.TimeoutException) as e:
                 retries += 1
+                if on_event:
+                    await on_event("retry_start", stage, f"reason=timeout, attempt={retries}")
                 if retries > MAX_LLM_RETRIES or (deadline and time.monotonic() >= deadline):
                     total_elapsed = (time.monotonic() - t_overall_start) * 1000.0
+                    if on_event:
+                        await on_event("request_timeout", stage, f"max_retries_reached")
                     return LLMResponse(
                         text="", first_token_time_ms=None, total_time_ms=total_elapsed,
                         tokens_in=0, tokens_out=0, retries=retries,
                         status="timeout", headers=last_headers,
                     )
+                if on_event:
+                    await on_event("retry_backoff", stage, f"delay_s=0.50")
                 await asyncio.sleep(0.5)
+                if on_event:
+                    await on_event("retry_end", stage, f"attempt={retries}")
 
             except Exception as e:
                 retries += 1
+                if on_event:
+                    await on_event("retry_start", stage, f"reason=exception, error={e}, attempt={retries}")
                 if retries > MAX_LLM_RETRIES or (deadline and time.monotonic() >= deadline):
                     total_elapsed = (time.monotonic() - t_overall_start) * 1000.0
                     return LLMResponse(
@@ -198,6 +230,11 @@ class LLMClient:
                     RETRY_BASE_DELAY_S * (2 ** (retries - 1)) + random.uniform(0.1, 0.5),
                     RETRY_MAX_DELAY_S,
                 )
+                if on_event:
+                    await on_event("retry_backoff", stage, f"delay_s={delay:.2f}")
+                await asyncio.sleep(delay)
+                if on_event:
+                    await on_event("retry_end", stage, f"attempt={retries}")
                 await asyncio.sleep(delay)
 
     async def _do_stream(

@@ -21,6 +21,32 @@ from typing import Optional, Tuple, Dict, Any
 from config import RateLimiterConfig, QUOTA_STATE_JSON
 
 
+import re
+
+
+def parse_duration_str(val: str) -> Optional[float]:
+    """Parse duration strings like '1m26.4s', '2.31s', '45s', '1h30m' into seconds."""
+    if not val:
+        return None
+    val = val.strip().lower()
+    matches = re.findall(r'(\d+(?:\.\d+)?)([hms])', val)
+    if matches:
+        tot = 0.0
+        for num, unit in matches:
+            n = float(num)
+            if unit == 'h':
+                tot += n * 3600.0
+            elif unit == 'm':
+                tot += n * 60.0
+            elif unit == 's':
+                tot += n
+        return tot
+    try:
+        return float(val.rstrip('s'))
+    except ValueError:
+        return None
+
+
 class TokenBucketRateLimiter:
     """Dual token-bucket (RPM + TPM/ITPM) with daily counters and async queue."""
 
@@ -155,23 +181,48 @@ class TokenBucketRateLimiter:
         # Check reset tokens
         rst_tok = headers.get("x-ratelimit-reset-tokens")
         if rst_tok:
-            try:
-                if rst_tok.endswith("s"):
-                    self.last_reset_tokens_s = float(rst_tok[:-1])
-                elif rst_tok.endswith("m"):
-                    self.last_reset_tokens_s = float(rst_tok[:-1]) * 60.0
-            except ValueError:
-                pass
+            parsed_tok = parse_duration_str(str(rst_tok))
+            if parsed_tok is not None:
+                self.last_reset_tokens_s = parsed_tok
 
         # Check reset requests (daily)
         rst_req = headers.get("x-ratelimit-reset-requests")
         if rst_req:
+            parsed_req = parse_duration_str(str(rst_req))
+            if parsed_req is not None:
+                self._day_reset_timestamp = time.time() + parsed_req
+                self.last_reset_requests_s = parsed_req
+
+        # Check remaining requests / tokens
+        rem_req = headers.get("x-ratelimit-remaining-requests")
+        if rem_req is not None:
             try:
-                if rst_req.endswith("s"):
-                    reset_delta = float(rst_req[:-1])
-                    self._day_reset_timestamp = time.time() + reset_delta
-                    self.last_reset_requests_s = reset_delta
-            except ValueError:
+                rem_val = int(rem_req)
+                self.last_remaining_requests = rem_val
+                calibrated_used = max(0, self.config.rpd - rem_val)
+                self._daily_requests = max(self._daily_requests, calibrated_used)
+            except (ValueError, TypeError):
+                pass
+
+        rem_tok = headers.get("x-ratelimit-remaining-tokens")
+        if rem_tok is not None:
+            try:
+                self.last_remaining_tokens = int(rem_tok)
+            except (ValueError, TypeError):
+                pass
+
+        lim_req = headers.get("x-ratelimit-limit-requests")
+        if lim_req is not None:
+            try:
+                self.last_limit_requests = int(lim_req)
+            except (ValueError, TypeError):
+                pass
+
+        lim_tok = headers.get("x-ratelimit-limit-tokens")
+        if lim_tok is not None:
+            try:
+                self.last_limit_tokens = int(lim_tok)
+            except (ValueError, TypeError):
                 pass
 
     async def acquire(

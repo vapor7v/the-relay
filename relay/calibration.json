@@ -6,8 +6,10 @@
   "tps": 520.0,
   "tps_stddev": 135.0,
   "total_median_ms": 445.0,
-  "rpm_limit": 60,
-  "tpm_limit": 7000,
+  "rpm_limit": 30,
+  "tpm_limit": 8000,
+  "rpd_limit": 1000,
+  "tpd_limit": 200000,
   "failure_rate": 0.01,
   "load_slowdown_factor": 15.0
 }

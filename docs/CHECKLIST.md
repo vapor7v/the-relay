@@ -25,11 +25,11 @@ This document provides a comprehensive verification audit of **The Relay** resea
 |---|---|---|---|
 | **Part 1** | **Inspection, Auditing & Timestamped Backups** | **PASSED** | Full codebase, results, report, and logs audited. Timestamped backup created in `backups/backup_20261114_023712/`. Created comprehensive issue audit in `docs/FINAL_AUDIT.md`. |
 | **Part 2** | **API Key & Configuration Management** | **PASSED** | `python-dotenv` loads `.env`. API key fetched via `os.getenv("GROQ_API_KEY")` with no hardcoded fallback. `.env` added to `.gitignore`. `.env.example` created with empty values. Sanitized conversation history and validated zero credentials in results/report. |
-| **Part 3** | **Rate Limiter Configuration & Provider Limits** | **PASSED** | Explicitly models RPM (30 baseline/60 burst), TPM (8,000), ITPM (7,000 ceiling), RPD (1,000 active cap / 14,400 tier ceiling), TPD (500,000). Dynamically updates from provider HTTP headers (`retry-after`, `x-ratelimit-*`). |
+| **Part 3** | **Rate Limiter Configuration & Provider Limits** | **PASSED** | Explicitly models published Developer-plan base reference: RPM (30), TPM (8,000), ITPM (7,000 input ceiling), RPD (1,000 active cap / published reference), TPD (200,000). Dynamically updates from provider HTTP headers (`retry-after`, `x-ratelimit-*`). |
 | **Part 4** | **Draft TTFT vs User-Visible TTFT** | **PASSED** | Separated internal `draft_ttft_ms` (arrival of first non-empty draft content token) from `user_visible_ttft_ms` (completion of verification certification). `time.monotonic()` used across all measurements; impossible measurements raise errors without artificial clamping. |
-| **Part 5** | **Semantic Evaluation & Retrieval Investigation** | **PASSED** | Frozen 18-question suite with structured ground truth (`required_claims`, `optional_details`, `expected_paper`, `expected_citation`). Solved retrieval trap in simulator keyword parser. Outputted claim-by-claim evaluation artifact: `experiments/reports/retrieval_evaluation_details.json`. |
+| **Part 5** | **Semantic Evaluation & Retrieval Investigation** | **PASSED** | Frozen 18-question suite with structured ground truth (`required_claims`, `optional_details`, `expected_paper`, `expected_citation`). Real Groq evaluation across all 3 settings recorded directly in `results.csv`. Outputted claim-by-claim evaluation artifact: `experiments/reports/retrieval_evaluation_details.json`. |
 | **Part 6** | **Citation Verification (Correctness-First Policy)** | **PASSED** | Never bypassed under budget or quota pressure. If daily quota or tokens are exhausted at Step 4, unverified drafts are strictly withheld and an honest refusal is served. Tested via unit tests. |
-| **Part 7** | **End-to-End Deadlines & Cancellation** | **PASSED** | Hierarchical deadlines: `QUEUE_TIMEOUT_S = 30.0s`, `REQUEST_TIMEOUT_S = 60.0s`, `PIPELINE_TIMEOUT_S = 120.0s`. Monotonic deadline propagated through all model calls and retry loops. Cancellation immediately releases queue slots and concurrency counters. |
+| **Part 7** | **End-to-End Deadlines & Cancellation** | **PASSED** | Hierarchical deadlines: `QUEUE_TIMEOUT_S = 15.0s`, `API_TIMEOUT_S = 30.0s`, `PIPELINE_TIMEOUT_S = 60.0s`. Monotonic deadline propagated through all model calls and retry loops. Cancellation immediately releases queue slots and concurrency counters. |
 | **Part 8** | **Daily Quota Reset Behavior** | **PASSED** | Tracks daily reset at 00:00:00 UTC. Persists daily request/token usage to `experiments/logs/quota_state.json`, preventing quota amnesia across process restarts. |
 | **Part 9** | **Experimental Reproducibility & Schema** | **PASSED** | Preserved exact 12-column `results.csv` schema (124 official rows). High-resolution companion logs: `experiments/logs/request_events.csv` and `experiments/logs/scenario_metadata.json`. `compute_tables_from_csv.py` derives all 4 tables deterministically. |
 | **Part 10** | **Load Test Statistics & Honest Reporting** | **PASSED** | Sample size $(N)$ reported alongside every latency percentile (e.g. `p50/p95/p99 (N=4)`). Scenarios with 0 successful responses display `N/A` for Cost/1k. Separated successful vs failed request costs. |
@@ -45,10 +45,10 @@ This document provides a comprehensive verification audit of **The Relay** resea
 
 ```
 pytest tests/ -v
-======================== 31 passed, 1 warning in 17.37s ========================
+======================== 33 passed, 1 warning in 18.40s ========================
 - tests/test_rate_limiter.py: 6/6 PASSED
-- tests/test_simulator.py:    7/7 PASSED
-- tests/test_timeouts.py:     4/4 PASSED
+- tests/test_simulator.py:    8/8 PASSED
+- tests/test_timeouts.py:     5/5 PASSED
 - tests/test_validator.py:    9/9 PASSED
 - tests/test_verification.py: 5/5 PASSED
 ```

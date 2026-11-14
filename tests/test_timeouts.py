@@ -104,6 +104,28 @@ class TestTimeouts(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(rate_limiter.current_queue_length, 0)
 
+    async def test_timeout_during_citation_verification(self):
+        """When citation verification times out or exceeds deadline, draft must be withheld."""
+        mock_llm = MagicMock()
+        # Step 1: Query analysis ok
+        # Step 3: Draft generated
+        # Step 4: Verification call times out
+        mock_llm.chat_stream = AsyncMock(side_effect=[
+            MagicMock(status="ok", text='{"answerable": true, "keywords": ["heads"]}', tokens_in=20, tokens_out=15, retries=0, headers={}),
+            MagicMock(status="ok", text="The base model uses 8 heads [Attention Is All You Need, p.5].", first_token_monotonic=time.monotonic(), tokens_in=50, tokens_out=30, retries=0, headers={}),
+            asyncio.TimeoutError("Verification timeout"),
+        ])
+
+        rate_limiter = TokenBucketRateLimiter(RateLimiterConfig(), state_file=None)
+        pipeline = Pipeline(self.mock_index, mock_llm, rate_limiter, self.mock_logger)
+
+        res = await pipeline.run("How many attention heads?")
+        self.assertEqual(res.status, "timeout")
+        self.assertFalse(res.verification_passed)
+        # Must withhold draft and not present it as verified
+        self.assertNotIn("The base model uses 8 heads", res.answer)
+        self.assertIn("exceeded", res.answer)
+
 
 if __name__ == "__main__":
     unittest.main()

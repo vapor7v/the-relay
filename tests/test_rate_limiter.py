@@ -104,13 +104,17 @@ class TestRateLimiter(unittest.IsolatedAsyncioTestCase):
         headers = {
             "retry-after": "12.5",
             "x-ratelimit-reset-tokens": "2.4s",
-            "x-ratelimit-reset-requests": "3600s",
+            "x-ratelimit-reset-requests": "1m26.4s",
+            "x-ratelimit-remaining-requests": "950",
+            "x-ratelimit-limit-requests": "1000",
         }
         limiter.update_from_headers(headers)
 
         self.assertEqual(limiter.last_retry_after, 12.5)
         self.assertEqual(limiter.last_reset_tokens_s, 2.4)
-        self.assertEqual(limiter.last_reset_requests_s, 3600.0)
+        self.assertAlmostEqual(limiter.last_reset_requests_s, 86.4, places=1)
+        self.assertEqual(limiter.last_remaining_requests, 950)
+        self.assertEqual(limiter.last_limit_requests, 1000)
 
     async def test_reservation_release_on_cancellation(self):
         """When an acquired reservation is released, tokens and daily counters must be restored."""

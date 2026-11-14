@@ -63,10 +63,10 @@ def compute_tables():
     print(t1_headers)
     print("-" * 145)
     t1_rows = [
-        ("Requests per minute (RPM)", "30 RPM baseline (60 RPM burst)", "Published free-tier baseline docs; continuous load probing", "High"),
+        ("Requests per minute (RPM)", "30 RPM", "Published Developer-plan base reference; live header calibrated", "High"),
         ("Tokens per minute (TPM)", "8,000 TPM (7,000 ITPM input limit)", "Directly observed in x-ratelimit-limit-tokens & 429 error bodies", "High"),
-        ("Requests per day (RPD)", "1,000 RPD active cap (14,400 tier)", "Directly observed in x-ratelimit-limit-requests & console limits", "High"),
-        ("Tokens per day (TPD)", "500,000 TPD", "Published Groq Console documentation for on-demand tier", "Medium"),
+        ("Requests per day (RPD)", "1,000 RPD active cap", "Directly observed in x-ratelimit-limit-requests & console limits", "High"),
+        ("Tokens per day (TPD)", "200,000 TPD", "Published Developer-plan base reference for qwen/qwen3.8-27b", "High"),
         ("Requests in flight at once", "Not established as a hard cap", "2-3 concurrent ~2k token payloads immediately hit 7,000 ITPM", "High"),
         ("What it returns when a limit is hit", "HTTP 429 rate_limit_exceeded JSON", "Directly observed live HTTP response with active retry-after header", "High"),
         ("Time until it recovers", "1.4s – 37.6s (up to retry-after: 15s)", "Directly observed in retry-after and x-ratelimit-reset-tokens", "High"),
